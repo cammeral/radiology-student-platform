@@ -19,6 +19,7 @@ import {
   ArrowRight,
   Eye,
   CheckCircle2,
+  Loader2,
 } from 'lucide-react';
 import {
   LECTURES_DATA,
@@ -27,6 +28,7 @@ import {
   CurriculumSubject,
   CurriculumLecture,
 } from '../data/curriculumBooks';
+import { getEmbeddableUrl, getDownloadUrl } from '../services/pdfViewerHelper';
 
 interface BooksViewProps {
   userClass?: string;
@@ -53,28 +55,6 @@ const STAGES_CONFIG = [
   { id: 'stage_3', label: 'المرحلة الثالثة', subtitle: 'المفراس CT والرنين MRI والسونار', tag: 'Stage 3' },
   { id: 'stage_4', label: 'المرحلة الرابعة', subtitle: 'التصوير المتقدم والـ PET-CT والبحوث', tag: 'Stage 4' },
 ];
-
-// Helper to convert Google Drive view links into embeddable preview links
-function getEmbeddableUrl(url: string): string {
-  if (!url) return '';
-  const trimmed = url.trim();
-  const driveMatch = trimmed.match(/drive\.google\.com\/file\/d\/([a-zA-Z0-9_-]+)/);
-  if (driveMatch && driveMatch[1]) {
-    return `https://drive.google.com/file/d/${driveMatch[1]}/preview`;
-  }
-  return trimmed;
-}
-
-// Helper to convert Google Drive view links into direct download links
-function getDownloadUrl(url: string): string {
-  if (!url) return '';
-  const trimmed = url.trim();
-  const driveMatch = trimmed.match(/drive\.google\.com\/file\/d\/([a-zA-Z0-9_-]+)/);
-  if (driveMatch && driveMatch[1]) {
-    return `https://drive.google.com/uc?export=download&id=${driveMatch[1]}`;
-  }
-  return trimmed;
-}
 
 // Subject visual styling helper
 function getSubjectMeta(subjectId: string) {
@@ -152,6 +132,21 @@ export const BooksView: React.FC<BooksViewProps> = ({
   // Active Reader Modal state
   const [activeLectureModal, setActiveLectureModal] = useState<ActiveLectureModalItem | null>(null);
   const [savedNotice, setSavedNotice] = useState('');
+  const [isIframeLoading, setIsIframeLoading] = useState(false);
+  const [iframeKey, setIframeKey] = useState(0);
+
+  // Set loading state whenever activeLectureModal changes
+  useEffect(() => {
+    if (activeLectureModal?.url) {
+      setIsIframeLoading(true);
+      const timer = setTimeout(() => {
+        setIsIframeLoading(false);
+      }, 5000);
+      return () => clearTimeout(timer);
+    } else {
+      setIsIframeLoading(false);
+    }
+  }, [activeLectureModal]);
 
   const currentData: CurriculumStage[] = LECTURES_DATA;
 
@@ -600,12 +595,45 @@ export const BooksView: React.FC<BooksViewProps> = ({
 
               {activeLectureModal.url ? (
                 <div className="space-y-3">
-                  <div className="w-full h-[65vh] rounded-2xl overflow-hidden border border-slate-200 dark:border-slate-800 bg-slate-100 dark:bg-slate-950 relative">
+                  {/* Notice info banner explaining preview vs download */}
+                  <div className="flex items-center justify-between px-3 py-2 rounded-xl bg-cyan-500/10 border border-cyan-500/20 text-[11px] text-cyan-800 dark:text-cyan-200">
+                    <div className="flex items-center gap-1.5">
+                      <BookOpen className="w-3.5 h-3.5 text-cyan-600 dark:text-cyan-400 shrink-0" />
+                      <span>معاينة وقراءة المحاضرة مباشرة دون تحميل تلقائي</span>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setIsIframeLoading(true);
+                        setIframeKey((k) => k + 1);
+                      }}
+                      className="text-[10px] font-bold text-cyan-700 dark:text-cyan-300 hover:underline flex items-center gap-1 cursor-pointer"
+                      title="إعادة تحميل المعاينة"
+                    >
+                      <Sparkles className="w-3 h-3" />
+                      <span>تحديث العرض</span>
+                    </button>
+                  </div>
+
+                  <div className="w-full h-[66vh] rounded-2xl overflow-hidden border border-slate-200 dark:border-slate-800 bg-slate-100 dark:bg-slate-950 relative flex flex-col">
+                    {isIframeLoading && (
+                      <div className="absolute inset-0 flex flex-col items-center justify-center bg-slate-50/90 dark:bg-slate-950/90 z-10 transition-opacity">
+                        <Loader2 className="w-8 h-8 text-cyan-600 dark:text-cyan-400 animate-spin mb-2" />
+                        <span className="text-xs font-bold text-slate-800 dark:text-slate-200">
+                          جاري تجهيز وعرض المحاضرة...
+                        </span>
+                        <span className="text-[10px] text-slate-400 mt-0.5">
+                          تصفح سلس لجميع الصفحات بدقة عالية
+                        </span>
+                      </div>
+                    )}
                     <iframe
+                      key={iframeKey}
                       src={getEmbeddableUrl(activeLectureModal.url)}
                       title={activeLectureModal.lectureName}
                       className="w-full h-full border-0"
                       allow="autoplay"
+                      onLoad={() => setIsIframeLoading(false)}
                     />
                   </div>
 
@@ -616,7 +644,7 @@ export const BooksView: React.FC<BooksViewProps> = ({
                       download={`${activeLectureModal.subjectName} - ${activeLectureModal.lectureName}.pdf`}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="flex-1 py-2.5 px-4 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold flex items-center justify-center gap-2 shadow-sm"
+                      className="flex-1 py-2.5 px-4 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold flex items-center justify-center gap-2 shadow-sm transition active:scale-95 cursor-pointer"
                     >
                       <Download className="w-4 h-4" />
                       <span>تحميل المحاضرة (PDF)</span>
@@ -626,7 +654,7 @@ export const BooksView: React.FC<BooksViewProps> = ({
                       href={activeLectureModal.url}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="py-2.5 px-3.5 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 text-xs font-bold flex items-center justify-center gap-1.5"
+                      className="py-2.5 px-3.5 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 text-xs font-bold flex items-center justify-center gap-1.5 transition active:scale-95"
                     >
                       <ExternalLink className="w-4 h-4" />
                       <span>فتح في نافذة كاملة</span>
@@ -643,7 +671,7 @@ export const BooksView: React.FC<BooksViewProps> = ({
                           );
                           setSavedNotice('تم حفظ نسخة من المحاضرة في قسم المكتبة بنجاح!');
                         }}
-                        className="py-2.5 px-3.5 rounded-xl bg-cyan-600 hover:bg-cyan-500 text-white text-xs font-bold flex items-center justify-center gap-1.5 cursor-pointer"
+                        className="py-2.5 px-3.5 rounded-xl bg-cyan-600 hover:bg-cyan-500 text-white text-xs font-bold flex items-center justify-center gap-1.5 cursor-pointer transition active:scale-95"
                       >
                         <FolderPlus className="w-4 h-4" />
                         <span>حفظ في مكتبتي</span>
