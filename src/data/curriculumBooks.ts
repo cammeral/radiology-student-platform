@@ -58,70 +58,50 @@ export const LECTURES_DATA: CurriculumStage[] = [
           },
           {
             id: 'anatomy_1',
-            name: 'التشريح البشري العام (Human Anatomy)',
+            name: 'التشريح',
             code: 'ANAT102',
             lectures: [
-              { name: 'المحاضرة 1: تشريح عظام ومفاصل الطرف العلوي (Upper Limb Anatomy)', url: 'https://drive.google.com' },
-              { name: 'المحاضرة 2: تشريح عظام ومفاصل الطرف السفلي (Lower Limb Anatomy)', url: 'https://drive.google.com' },
-              { name: 'المحاضرة 3: تشريح القفص الصدري والرئتين (Thoracic Cage & Respiratory Anatomy)', url: 'https://drive.google.com' },
-              { name: 'المحاضرة 4: تشريح القلب والأوعية الدموية الرئيسية (Cardiovascular Anatomy)', url: 'https://drive.google.com' },
-              { name: 'المحاضرة 5: تشريح العمود الفقري والحبل الشوكي (Vertebral Column & Spinal Cord)', url: 'https://drive.google.com' },
-              { name: 'المحاضرة 6: تشريح البطن والأحشاء الداخلية (Abdomen & Viscera)', url: 'https://drive.google.com' },
-              { name: 'المحاضرة 7: تشريح الحوض والأعضاء التناسلية والبولية (Pelvic Anatomy)', url: 'https://drive.google.com' },
-              { name: 'المحاضرة 8: تشريح الجمجمة وعظام الوجه (Skull & Facial Bones)', url: 'https://drive.google.com' },
+
             ],
           },
           {
             id: 'physiology_1',
-            name: 'الفسلجة الطبية العامة (Medical Physiology)',
+            name: 'الفسلجة',
             code: 'PHYS103',
             lectures: [
-              { name: 'المحاضرة 1: فسلجة الخلية ونقل المواد وتوازن السوائل (Cell Physiology & Homeostasis)', url: 'https://drive.google.com' },
-              { name: 'المحاضرة 2: فسلجة القلب والدورة الدموية وضغط الدم (Cardiovascular System)', url: 'https://drive.google.com' },
-              { name: 'المحاضرة 3: فسلجة الجهاز التنفسي وتبادل الغازات (Respiratory Physiology)', url: 'https://drive.google.com' },
-              { name: 'المحاضرة 4: فسلجة الجهاز البولي ووظائف الكلى (Renal Physiology & GFR)', url: 'https://drive.google.com' },
-              { name: 'المحاضرة 5: فسلجة الجهاز العصبي المركزي ونقل الإشارات (Nervous System)', url: 'https://drive.google.com' },
-              { name: 'المحاضرة 6: فسلجة الغدد الصماء والهرمونات (Endocrine System)', url: 'https://drive.google.com' },
+
             ],
           },
           {
             id: 'med_terms_1',
-            name: 'المصطلحات الطبية واللغة (Medical Terminology)',
+            name: 'المصطلحات الطبية',
             code: 'TERM104',
             lectures: [
-              { name: 'المحاضرة 1: اللواحق والبوادئ والجذور الطبية (Medical Prefixes & Suffixes)', url: 'https://drive.google.com' },
-              { name: 'المحاضرة 2: مصطلحات الأوضاع والاتجاهات التشريحية (Anatomical Directions & Positions)', url: 'https://drive.google.com' },
-              { name: 'المحاضرة 3: مصطلحات الأمراض والإجراءات الإشعاعية (Diagnostic Radiology Terms)', url: 'https://drive.google.com' },
-              { name: 'المحاضرة 4: المصطلحات السريرية الشائعة في المستشفيات وكتابة التقارير', url: 'https://drive.google.com' },
+
             ],
           },
           {
             id: 'biochem_1',
-            name: 'الكيمياء الحياتية الطبية (Medical Biochemistry)',
+            name: 'الكيمياء',
             code: 'BIO105',
             lectures: [
-              { name: 'المحاضرة 1: كيمياء الدم والإنزيمات والبروتينات الحيوية', url: 'https://drive.google.com' },
-              { name: 'المحاضرة 2: وظائف الكلى والكرياتينين وتأثير صبغات التباين الإشعاعية', url: 'https://drive.google.com' },
-              { name: 'المحاضرة 3: وظائف الكبد والأيض الحيوي والتوازن الحمضي القاعدي', url: 'https://drive.google.com' },
+
             ],
           },
           {
             id: 'informatics_1',
-            name: 'الحاسوب والأنظمة الطبية (Medical Informatics)',
+            name: 'الحاسوب',
             code: 'COMP106',
             lectures: [
-              { name: 'المحاضرة 1: أساسيات معالجة الصور الرقمية الإشعاعية (Digital Image Processing)', url: 'https://drive.google.com' },
-              { name: 'المحاضرة 2: أنظمة الشبكات وقواعد البيانات الطبية في المستشفيات', url: 'https://drive.google.com' },
-              { name: 'المحاضرة 3: مقدمة في أنظمة حفظ الصور الطبية (DICOM & PACS Basics)', url: 'https://drive.google.com' },
+
             ],
           },
           {
             id: 'ethics_1',
-            name: 'أخلاقيات المهن الطبية والسلامة (Medical Ethics)',
+            name: 'أخلاقيات المهن',
             code: 'ETH107',
             lectures: [
-              { name: 'المحاضرة 1: ميثاق أخلاقيات تقني الأشعة وحقوق المريض وسرية البيانات', url: 'https://drive.google.com' },
-              { name: 'المحاضرة 2: إجراءات مكافحة العدوى والتعقيم في أقسام الأشعة', url: 'https://drive.google.com' },
+
             ],
           },
         ],
@@ -138,79 +118,50 @@ export const LECTURES_DATA: CurriculumStage[] = [
         subjects: [
           {
             id: 'xray_tech_2',
-            name: 'تقنيات الأشعة السينية التقليدية (X-Ray Positioning)',
+            name: 'تقنيات الأشعة السينية التقليدية',
             code: 'RAD201',
             lectures: [
-              { name: 'المحاضرة 1: وضعيات تصوير الصدر الروتينية والخاصة (Chest Radiography: PA, Lat, Lordotic)', url: 'https://drive.google.com' },
-              { name: 'المحاضرة 2: وضعيات تصوير البطن والحوض (Abdomen Erect/Supine & Pelvis AP)', url: 'https://drive.google.com' },
-              { name: 'المحاضرة 3: وضعيات تصوير الطرف العلوي (Hand, Wrist, Forearm, Elbow)', url: 'https://drive.google.com' },
-              { name: 'المحاضرة 4: وضعيات تصوير الكتف وعظم الترقوة ولوح الكتف (Shoulder & Clavicle)', url: 'https://drive.google.com' },
-              { name: 'المحاضرة 5: وضعيات تصوير الطرف السفلي (Foot, Ankle, Leg, Knee, Femur)', url: 'https://drive.google.com' },
-              { name: 'المحاضرة 6: وضعيات تصوير العمود الفقري العنقي والصدري (Cervical & Thoracic Spine)', url: 'https://drive.google.com' },
-              { name: 'المحاضرة 7: وضعيات تصوير العمود الفقري القطني والعجزي (Lumbar & Sacrum Spine)', url: 'https://drive.google.com' },
-              { name: 'المحاضرة 8: وضعيات تصوير الجمجمة وعظام الوجه (Skull, Towne, Waters View)', url: 'https://drive.google.com' },
-              { name: 'المحاضرة 9: فحوصات التنظير التألقي والصبغات (Fluoroscopy & Barium Meal / Enema)', url: 'https://drive.google.com' },
-              { name: 'المحاضرة 10: تقنيات تصوير الأطفال والحوادث الطارئة في المستشفى (Pediatric & Trauma Radiography)', url: 'https://drive.google.com' },
+
             ],
           },
           {
             id: 'rad_anatomy_2',
-            name: 'التشريح الشعاعي (Radiological Anatomy)',
+            name: 'التشريح الشعاعي',
             code: 'RAD202',
             lectures: [
-              { name: 'المحاضرة 1: قراءة وتحليل التشريح الشعاعي الطبيعي للصدر (Normal Chest X-Ray Landmarks)', url: 'https://drive.google.com' },
-              { name: 'المحاضرة 2: التشريح الشعاعي لعظام ومفاصل الأطراف العلوية والسفلية', url: 'https://drive.google.com' },
-              { name: 'المحاضرة 3: التشريح الشعاعي للعمود الفقري ومخارج الأعصاب', url: 'https://drive.google.com' },
-              { name: 'المحاضرة 4: التشريح الشعاعي للجمجمة والجيوب الأنفية وقاعدة الجمجمة', url: 'https://drive.google.com' },
-              { name: 'المحاضرة 5: العلامات الشعاعية الطبيعية والتشوهات التطورية الشائعة', url: 'https://drive.google.com' },
-              { name: 'المحاضرة 6: التشريح الشعاعي لفحوصات الجهاز الهضمي والبولي الملونة', url: 'https://drive.google.com' },
+
             ],
           },
           {
             id: 'rad_protection_2',
-            name: 'الوقاية الإشعاعية والسلامة (Radiation Protection)',
+            name: 'الوقاية الإشعاعية',
             code: 'RAD203',
             lectures: [
-              { name: 'المحاضرة 1: المبادئ الدولية للحماية الإشعاعية وقاعدة ALARA ومعايير ICRP', url: 'https://drive.google.com' },
-              { name: 'المحاضرة 2: التأثيرات البيولوجية للإشعاع (Deterministic & Stochastic Effects)', url: 'https://drive.google.com' },
-              { name: 'المحاضرة 3: وسائل الوقاية والتدريع الرصاصي للمريض ولتقني الأشعة', url: 'https://drive.google.com' },
-              { name: 'المحاضرة 4: أجهزة مراقبة الجرعات الشخصية (Film Badges & TLD Dosimeters)', url: 'https://drive.google.com' },
-              { name: 'المحاضرة 5: حسابات سمك الجدران والتدريع لغرف الأشعة والمفراس', url: 'https://drive.google.com' },
-              { name: 'المحاضرة 6: بنك أسئلة الامتحان التقويمي الوزاري للوقاية الإشعاعية', url: 'https://drive.google.com' },
+
             ],
           },
           {
             id: 'rad_equip_2',
-            name: 'أجهزة ومعدات التصوير الطبي (Radiographic Equipment)',
+            name: 'أجهزة ومعدات التصوير الطبي',
             code: 'RAD204',
             lectures: [
-              { name: 'المحاضرة 1: تصميم أنبوبة الأشعة السينية والأنود الدوار والكاثود', url: 'https://drive.google.com' },
-              { name: 'المحاضرة 2: مولدات الجهد العالي والدوائر الكهربائية للتحكم بالتعريض', url: 'https://drive.google.com' },
-              { name: 'المحاضرة 3: أنظمة الأشعة المحوسبة (Computed Radiography - CR & PSP Plates)', url: 'https://drive.google.com' },
-              { name: 'المحاضرة 4: أنظمة الأشعة الرقمية المباشرة (Direct Radiography - Flat Panel Detectors)', url: 'https://drive.google.com' },
-              { name: 'المحاضرة 5: الشبكات المانعة للتبعثر (Anti-Scatter Grids) وتأثيرها على جودة الصورة', url: 'https://drive.google.com' },
-              { name: 'المحاضرة 6: أجهزة التنظير التألقي الرقمي (Digital Fluoroscopy & C-Arm)', url: 'https://drive.google.com' },
+
             ],
           },
           {
             id: 'pathology_2',
-            name: 'علم الأمراض الشعاعي (Radiographic Pathology)',
+            name: 'علم الأمراض',
             code: 'PATH205',
             lectures: [
-              { name: 'المحاضرة 1: أمراض الجهاز التنفسي في أفلام الأشعة (Pneumonia, Pleural Effusion, TB)', url: 'https://drive.google.com' },
-              { name: 'المحاضرة 2: أمراض وأورام العظام والكسور المرضية وهشاشة العظام', url: 'https://drive.google.com' },
-              { name: 'المحاضرة 3: أمراض البطن والانسداد المعوي والتثقب (Pneumoperitoneum)', url: 'https://drive.google.com' },
-              { name: 'المحاضرة 4: أمراض الجهاز البولي وحصوات الكلى في صور الأشعة KUB', url: 'https://drive.google.com' },
+
             ],
           },
           {
             id: 'clinical_train_2',
-            name: 'التدريب السريري في المستشفيات (Hospital Clinical Log)',
+            name: 'التدريب السريري',
             code: 'CLIN206',
             lectures: [
-              { name: 'المحاضرة 1: بروتوكول استقبال المريض والتحقق من الهوية وطلب الفحص', url: 'https://drive.google.com' },
-              { name: 'المحاضرة 2: التعامل مع الحالات الطارئة وغرف الإنعاش والعناية المركزة', url: 'https://drive.google.com' },
-              { name: 'المحاضرة 3: إرشادات كتابة تقرير الحالات الإشعاعية وتوثيق الفحوصات', url: 'https://drive.google.com' },
+
             ],
           },
         ],
@@ -227,79 +178,50 @@ export const LECTURES_DATA: CurriculumStage[] = [
         subjects: [
           {
             id: 'ct_scan_3',
-            name: 'تقنيات المفراس الحلزوني المقطعي (Computed Tomography - CT)',
+            name: ' المفراس',
             code: 'CT301',
             lectures: [
-              { name: 'المحاضرة 1: فيزياء المفراس المقطعي وتاريخ أجيال الماسحات (CT Generations & Physics)', url: 'https://drive.google.com' },
-              { name: 'المحاضرة 2: معايير ومحددات الفحص: Pitch, Slice Thickness, kVp, mAs', url: 'https://drive.google.com' },
-              { name: 'المحاضرة 3: مقياس هاونسفيلد وضبط النوافذ التشخيصية (Hounsfield Units & Windowing)', url: 'https://drive.google.com' },
-              { name: 'المحاضرة 4: بروتوكولات فحص الدماغ والحوادث الطارئة والنزف الدماغي (Brain CT Protocols)', url: 'https://drive.google.com' },
-              { name: 'المحاضرة 5: بروتوكولات فحص الصدر والجلطة الرئوية (Chest CT & CTPA Protocols)', url: 'https://drive.google.com' },
-              { name: 'المحاضرة 6: بروتوكولات فحص البطن والحوض وحقن الصبغة الوريدية ثلاثي المراحل (Triphasic Abdomen CT)', url: 'https://drive.google.com' },
-              { name: 'المحاضرة 7: تصوير الشرايين والأوعية بالمفراس المقطعي (CT Angiography - CTA)', url: 'https://drive.google.com' },
-              { name: 'المحاضرة 8: الجرعة الإشعاعية وتقنيات خفض الجرعة في المفراس (CTDI & Dose Modulation)', url: 'https://drive.google.com' },
-              { name: 'المحاضرة 9: التشوهات والعيوب الصورية في المفراس وطرق التغلب عليها (CT Artifacts)', url: 'https://drive.google.com' },
-              { name: 'المحاضرة 10: بنك أسئلة الامتحان التقويمي الوزاري لمادة المفراس الحلزوني CT', url: 'https://drive.google.com' },
+
             ],
           },
           {
             id: 'mri_intro_3',
-            name: 'تقنيات الرنين المغناطيسي الأساسي (MRI Technology - Principles)',
+            name: 'الرنين',
             code: 'MRI302',
             lectures: [
-              { name: 'المحاضرة 1: فيزياء الرنين المغناطيسي وحركة البروتونات والمجال المغناطيسي B0', url: 'https://drive.google.com' },
-              { name: 'المحاضرة 2: ظاهرة الرنين والتردد النبضي Larmor Frequency ومعادلة لارمور', url: 'https://drive.google.com' },
-              { name: 'المحاضرة 3: تسلسلات النبض الأساسية ومبدأ التباين: T1-Weighted, T2-Weighted, PD', url: 'https://drive.google.com' },
-              { name: 'المحاضرة 4: تسلسلات الصدى السريع ومبدأ الانعكاس: Spin Echo, Fast Spin Echo, Inversion Recovery (STIR, FLAIR)', url: 'https://drive.google.com' },
-              { name: 'المحاضرة 5: السلامة والاحتياطات الصارمة داخل غرفة الرنين (MRI Safety Zones, SAR & Implants)', url: 'https://drive.google.com' },
-              { name: 'المحاضرة 6: بروتوكولات رنين الدماغ والجهاز العصبي (Brain MRI Routine Protocols)', url: 'https://drive.google.com' },
-              { name: 'المحاضرة 7: بروتوكولات رنين العمود الفقري العنقي والقطني (Spine MRI Protocols)', url: 'https://drive.google.com' },
-              { name: 'المحاضرة 8: صبغات التباين في الرنين (Gadolinium Contrast Properties & Safety)', url: 'https://drive.google.com' },
-              { name: 'المحاضرة 9: التشوهات والعيوب الصورية في الرنين المغناطيسي وطرق تفاديها (MRI Artifacts)', url: 'https://drive.google.com' },
-              { name: 'المحاضرة 10: بنك أسئلة الامتحان التقويمي الوزاري لمادة الرنين المغناطيسي MRI', url: 'https://drive.google.com' },
+
             ],
           },
           {
             id: 'ultrasound_3',
-            name: 'تقنيات الموجات فوق الصوتية والسونار (Ultrasound Imaging)',
+            name: 'الموجات فوق الصوتية',
             code: 'US303',
             lectures: [
-              { name: 'المحاضرة 1: الفيزياء الصوتية ومبدأ الكهروإجهاد والمجسات الترددية (Transducers & Piezoelectric Effect)', url: 'https://drive.google.com' },
-              { name: 'المحاضرة 2: تقنيات الدوبلر اللوني والموجي وتصوير تدفق الدم (Color & Spectral Doppler)', url: 'https://drive.google.com' },
-              { name: 'المحاضرة 3: بروتوكولات فحص البطن وسونار الكبد والمرارة والبنكرياس والطحال', url: 'https://drive.google.com' },
-              { name: 'المحاضرة 4: سونار الكلى والمثانة والجهاز البولي وفحوصات الحوض', url: 'https://drive.google.com' },
-              { name: 'المحاضرة 5: سونار الرقبة والغدة الدرقية والأنسجة السطحية (Small Parts & Thyroid Ultrasound)', url: 'https://drive.google.com' },
-              { name: 'المحاضرة 6: التشوهات والعيوب الصورية في السونار (Ultrasound Artifacts & Optimization)', url: 'https://drive.google.com' },
+
             ],
           },
           {
             id: 'interventional_3',
-            name: 'تقنيات الأشعة التداخلية والقسطرة (Interventional Radiology)',
+            name: 'الأشعة التداخلية',
             code: 'INT304',
             lectures: [
-              { name: 'المحاضرة 1: تصميم غرف القسطرة وتقنيات التصوير الطرحي الرقمي (Digital Subtraction Angiography - DSA)', url: 'https://drive.google.com' },
-              { name: 'المحاضرة 2: أدوات القسطرة: القساطر الشريانية، الأسلاك التوجيهية، والدعامات (Catheters & Stents)', url: 'https://drive.google.com' },
-              { name: 'المحاضرة 3: الإجراءات العلاجية: قسطرة وتوسيع الشرايين، الانصمام، وسحب السوائل تحت التوجيه الإشعاعي', url: 'https://drive.google.com' },
+
             ],
           },
           {
             id: 'nuclear_med_3',
-            name: 'الطب النووي والتصوير النظائري (Nuclear Medicine)',
+            name: 'الطب النووي',
             code: 'NUC305',
             lectures: [
-              { name: 'المحاضرة 1: فيزياء النظائر المشعة وإنتاج التكنوشيوم Tc-99m ومولدات النظائر', url: 'https://drive.google.com' },
-              { name: 'المحاضرة 2: مبدأ عمل كاميرا جاما وتصوير الـ SPECT ثلاثي الأبعاد', url: 'https://drive.google.com' },
-              { name: 'المحاضرة 3: المسح الوميضي للعظام والغدة الدرقية والكلى (Bone & Thyroid Scintigraphy)', url: 'https://drive.google.com' },
+
             ],
           },
           {
             id: 'patient_care_3',
-            name: 'العناية بالمرضى ومواد التباين والصبغات (Contrast Media & Care)',
+            name: 'الباثولوجي',
             code: 'CARE306',
             lectures: [
-              { name: 'المحاضرة 1: تصنيف صبغات التباين اليودية وغير اليودية ومستويات الأسمولية (Osmolality)', url: 'https://drive.google.com' },
-              { name: 'المحاضرة 2: اعتلال الكلى الناتج عن الصبغات والبروتوكولات الوقائية (Contrast-Induced Nephropathy - CIN)', url: 'https://drive.google.com' },
-              { name: 'المحاضرة 3: التعامل الفوري مع صدمات الحساسية وحقن الأدرينالين والإسعافات الطارئة', url: 'https://drive.google.com' },
+,
             ],
           },
         ],
