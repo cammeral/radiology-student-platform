@@ -54,7 +54,6 @@ export const LECTURES_DATA: CurriculumStage[] = [
             name: 'الباطنية',
             code: 'RAD101',
             lectures: [
-              { name: 'المحاضرة 1: مدخل إلى بنية الذرة والإشعاع الكهرومغناطيسي', url: 'https://raw.githubusercontent.com/cammeral/xray-book/e711bc1d0b1d5560e2594f0865fd24e837f037f9/s4/%D8%A7%D9%84%D8%A8%D8%A7%D8%B7%D9%86%D9%8A/%D8%A7%D9%84%D9%85%D8%AD%D8%A7%D8%B6%D8%B1%D8%A9%20%D8%A7%D9%84%D8%A7%D9%88%D9%84%D9%89%20%D8%A7%D9%84%D8%A8%D8%A7%D8%B7%D9%86%D9%8A.pdf' },
             ],
           },
           {
