@@ -51,7 +51,7 @@ export const LECTURES_DATA: CurriculumStage[] = [
         subjects: [
           {
             id: 'rad_phys_1',
-            name: 'الباطنية',
+            name: 'البايولوجي',
             code: 'RAD101',
             lectures: [
             ],
@@ -98,7 +98,7 @@ export const LECTURES_DATA: CurriculumStage[] = [
           },
           {
             id: 'ethics_1',
-            name: 'أخلاقيات المهن',
+            name: 'فيزياء',
             code: 'ETH107',
             lectures: [
 
@@ -118,7 +118,7 @@ export const LECTURES_DATA: CurriculumStage[] = [
         subjects: [
           {
             id: 'xray_tech_2',
-            name: 'تقنيات الأشعة السينية التقليدية',
+            name: 'الاجهزة',
             code: 'RAD201',
             lectures: [
 
@@ -142,7 +142,7 @@ export const LECTURES_DATA: CurriculumStage[] = [
           },
           {
             id: 'rad_equip_2',
-            name: 'أجهزة ومعدات التصوير الطبي',
+            name: 'التصوير',
             code: 'RAD204',
             lectures: [
 
@@ -158,7 +158,7 @@ export const LECTURES_DATA: CurriculumStage[] = [
           },
           {
             id: 'clinical_train_2',
-            name: 'التدريب السريري',
+            name: 'الفحوصات',
             code: 'CLIN206',
             lectures: [
 
