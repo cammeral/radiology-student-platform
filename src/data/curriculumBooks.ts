@@ -51,17 +51,10 @@ export const LECTURES_DATA: CurriculumStage[] = [
         subjects: [
           {
             id: 'rad_phys_1',
-            name: 'فيزياء الإشعاع والأشعة (Radiation Physics)',
+            name: 'الباطنية',
             code: 'RAD101',
             lectures: [
-              { name: 'المحاضرة 1: مدخل إلى بنية الذرة والإشعاع الكهرومغناطيسي', url: 'https://drive.google.com' },
-              { name: 'المحاضرة 2: آلية إنتاج الأشعة السينية وأنبوبة الأشعة (X-Ray Production & Tube Physics)', url: 'https://drive.google.com' },
-              { name: 'المحاضرة 3: تفاعل الإشعاع مع المادة (Compton & Photoelectric Effect)', url: 'https://drive.google.com' },
-              { name: 'المحاضرة 4: توهين الأشعة والجرعات الإشعاعية (Attenuation & Radiation Quantities)', url: 'https://drive.google.com' },
-              { name: 'المحاضرة 5: معايير جودة الحزمة الإشعاعية والفلترة (Beam Quality & Filtration)', url: 'https://drive.google.com' },
-              { name: 'المحاضرة 6: الكواشف الإشعاعية وقياس الإشعاع (Radiation Detectors & Dosimetry)', url: 'https://drive.google.com' },
-              { name: 'المحاضرة 7: العوامل المؤثرة على التعريض الإشعاعي (kVp, mAs, Distance)', url: 'https://drive.google.com' },
-              { name: 'المحاضرة 8: مراجعة شاملة ومسائل الحسابات الإشعاعية للفاينل الوزاري', url: 'https://drive.google.com' },
+              { name: 'المحاضرة 1: مدخل إلى بنية الذرة والإشعاع الكهرومغناطيسي', url: 'https://raw.githubusercontent.com/cammeral/xray-book/e711bc1d0b1d5560e2594f0865fd24e837f037f9/s4/%D8%A7%D9%84%D8%A8%D8%A7%D8%B7%D9%86%D9%8A/%D8%A7%D9%84%D9%85%D8%AD%D8%A7%D8%B6%D8%B1%D8%A9%20%D8%A7%D9%84%D8%A7%D9%88%D9%84%D9%89%20%D8%A7%D9%84%D8%A8%D8%A7%D8%B7%D9%86%D9%8A.pdf' },
             ],
           },
           {
