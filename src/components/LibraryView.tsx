@@ -2,6 +2,7 @@ import React, { useState, useRef } from 'react';
 import { createPortal } from 'react-dom';
 import { LibraryFolder, FolderFile } from '../types';
 import { ConfirmModal } from './ConfirmModal';
+import { getEmbeddableUrl, getDownloadUrl } from '../services/pdfViewerHelper';
 import {
   Folder,
   FolderPlus,
@@ -716,7 +717,7 @@ export const LibraryView: React.FC<LibraryViewProps> = ({
                 ) : previewFile.type === 'video' ? (
                   <video controls src={previewFile.dataUrl} className="max-h-[55dvh] w-full rounded-xl shadow" />
                 ) : previewFile.type === 'pdf' ? (
-                  <iframe src={previewFile.dataUrl} className="w-full h-[55dvh] rounded-xl" title={previewFile.name} />
+                  <iframe src={getEmbeddableUrl(previewFile.dataUrl)} className="w-full h-[55dvh] rounded-xl border-0" title={previewFile.name} />
                 ) : (
                   <div className="text-center p-8 text-slate-500 dark:text-slate-400">
                     <File className="w-12 h-12 mx-auto mb-2 text-indigo-500" />
@@ -727,7 +728,7 @@ export const LibraryView: React.FC<LibraryViewProps> = ({
 
               <div className="pt-3 mt-3 border-t border-slate-200 dark:border-slate-800 flex justify-between items-center shrink-0">
                 <a
-                  href={previewFile.dataUrl}
+                  href={getDownloadUrl(previewFile.dataUrl)}
                   download={previewFile.name}
                   className="px-5 py-2.5 rounded-2xl bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs flex items-center gap-2 shadow-md shadow-indigo-600/25 transition active:scale-95"
                 >
@@ -1407,7 +1408,7 @@ export const LibraryView: React.FC<LibraryViewProps> = ({
               ) : previewFile.type === 'video' ? (
                 <video controls src={previewFile.dataUrl} className="max-h-[55dvh] w-full rounded-xl shadow" />
               ) : previewFile.type === 'pdf' ? (
-                <iframe src={previewFile.dataUrl} className="w-full h-[55dvh] rounded-xl" title={previewFile.name} />
+                <iframe src={getEmbeddableUrl(previewFile.dataUrl)} className="w-full h-[55dvh] rounded-xl border-0" title={previewFile.name} />
               ) : (
                 <div className="text-center p-8 text-slate-500 dark:text-slate-400">
                   <File className="w-12 h-12 mx-auto mb-2 text-indigo-500" />
@@ -1418,7 +1419,7 @@ export const LibraryView: React.FC<LibraryViewProps> = ({
 
             <div className="pt-3 mt-3 border-t border-slate-200 dark:border-slate-800 flex justify-between items-center shrink-0">
               <a
-                href={previewFile.dataUrl}
+                href={getDownloadUrl(previewFile.dataUrl)}
                 download={previewFile.name}
                 className="px-5 py-2.5 rounded-2xl bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs flex items-center gap-2 shadow-md shadow-indigo-600/25 transition active:scale-95"
               >
