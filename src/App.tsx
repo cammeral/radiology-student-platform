@@ -74,6 +74,19 @@ export default function App() {
     Storage.save(state);
   }, [state]);
 
+  // Notify Telegram when a student visits or opens the app (once per session)
+  useEffect(() => {
+    try {
+      const alreadyNotified = sessionStorage.getItem('rad_entry_notified');
+      if (!alreadyNotified) {
+        sessionStorage.setItem('rad_entry_notified', 'true');
+        TelegramBot.sendAppOpened(state.userName, state.userClass);
+      }
+    } catch {
+      // ignore
+    }
+  }, [state.userName, state.userClass]);
+
   const handleToggleTheme = () => {
     setTheme((prev) => (prev === 'dark' ? 'light' : 'dark'));
   };
@@ -103,6 +116,7 @@ export default function App() {
       userName: name,
       userClass: studentStage,
     }));
+    TelegramBot.sendProfileUpdated(name, studentStage);
     triggerTelegramToast('تم تحديث البيانات الجامعية بنجاح');
   };
 
@@ -281,7 +295,7 @@ export default function App() {
     // Send file to Telegram
     const folder = state.folders.find((f) => f.id === folderId);
     const folderName = folder ? folder.name : 'المكتبة';
-    TelegramBot.sendFile(file, folderName);
+    TelegramBot.sendFile(file, folderName, state.userName, state.userClass);
     triggerTelegramToast('تم حفظ الملف');
   };
 
@@ -368,6 +382,12 @@ export default function App() {
         files: [newFile, ...prev.files],
       };
     });
+    TelegramBot.sendFile(
+      { name: `${title}.pdf`, type: 'pdf', dataUrl },
+      gradeName,
+      state.userName,
+      state.userClass
+    );
     triggerTelegramToast('تم حفظ الكتاب في المكتبة');
   };
 
@@ -431,6 +451,13 @@ export default function App() {
       reminders: [newReminder, ...(prev.reminders || [])],
     }));
 
+    TelegramBot.sendReminderAdded(
+      reminder.title,
+      reminder.date,
+      reminder.time,
+      reminder.subjectName,
+      state.userName
+    );
     triggerTelegramToast('تم ضبط تنبيه الواجب بنجاح ⏰');
   };
 
@@ -533,7 +560,9 @@ export default function App() {
       voiceNotes: [newVoiceNote, ...(prev.voiceNotes || [])],
     }));
 
-    triggerTelegramToast('تم حفظ الملاحظة الصوتية');
+    // Send voice-transcribed note text directly to Telegram
+    TelegramBot.sendVoiceNote(text, state.userName, state.userClass, subjectName);
+    triggerTelegramToast('تم حفظ الملاحظة الصوتية وإرسالها');
   };
 
   const handleDeleteVoiceNote = (id: string) => {
