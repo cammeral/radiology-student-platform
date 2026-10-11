@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { AppState, ScheduleItem, DayOfWeek, GradeItem, FolderFile, HomeworkReminder } from './types';
+import { AppState, ScheduleItem, DayOfWeek, GradeItem, FolderFile, HomeworkReminder, DayCalendarNote } from './types';
 import { Storage } from './services/storage';
 import { TelegramBot } from './services/telegramBot';
 import { SoundService } from './services/soundService';
@@ -173,25 +173,61 @@ export default function App() {
     }));
   };
 
-  const handleSaveCalendarNote = (date: string, text: string) => {
-    setState((prev) => {
-      const existing = prev.calendarNotes.filter((n) => n.date !== date);
-      return {
-        ...prev,
-        calendarNotes: [...existing, { id: 'cn_' + Date.now(), date, text, createdAt: new Date().toISOString() }],
-      };
-    });
+  const handleAddCalendarNote = (
+    date: string,
+    text: string,
+    source: 'voice' | 'manual' = 'manual',
+    subjectName?: string
+  ) => {
+    const now = new Date();
+    const timeStr = now.toLocaleTimeString('ar-SA', { hour: '2-digit', minute: '2-digit' });
+    const newNote: DayCalendarNote = {
+      id: 'cn_' + Date.now() + '_' + Math.random().toString(36).substring(2, 6),
+      date,
+      text,
+      createdAt: now.toISOString(),
+      time: timeStr,
+      source,
+      subjectName,
+    };
 
-    // Send note to Telegram
-    TelegramBot.sendCalendarNote(date, text);
-    triggerTelegramToast('تم حفظ الملاحظة');
+    setState((prev) => ({
+      ...prev,
+      calendarNotes: [newNote, ...(prev.calendarNotes || [])],
+    }));
+
+    TelegramBot.sendCalendarNote(date, text, state.userName);
+    triggerTelegramToast('تم حفظ الملاحظة في التقويم 📅');
+  };
+
+  const handleUpdateCalendarNote = (id: string, text: string) => {
+    setState((prev) => ({
+      ...prev,
+      calendarNotes: (prev.calendarNotes || []).map((n) =>
+        n.id === id ? { ...n, text } : n
+      ),
+    }));
+    triggerTelegramToast('تم تحديث الملاحظة بنجاح');
+  };
+
+  const handleDeleteCalendarNoteItem = (id: string) => {
+    setState((prev) => ({
+      ...prev,
+      calendarNotes: (prev.calendarNotes || []).filter((n) => n.id !== id),
+    }));
+    triggerTelegramToast('تم حذف الملاحظة من التقويم');
+  };
+
+  const handleSaveCalendarNote = (date: string, text: string) => {
+    handleAddCalendarNote(date, text, 'manual');
   };
 
   const handleDeleteCalendarNote = (date: string) => {
     setState((prev) => ({
       ...prev,
-      calendarNotes: prev.calendarNotes.filter((n) => n.date !== date),
+      calendarNotes: (prev.calendarNotes || []).filter((n) => n.date !== date),
     }));
+    triggerTelegramToast('تم حذف ملاحظات اليوم');
   };
 
   // 3. GRADES ACTIONS
@@ -541,34 +577,56 @@ export default function App() {
     setActiveAlarmReminder(reminder);
   };
 
-  // 7. VOICE-TO-TEXT NOTES ACTIONS
+  // 7. VOICE-TO-TEXT NOTES ACTIONS (تحفظ بالتقويم ليوم اليوم المحدد مع الشعار والإشعار)
   const handleAddVoiceNote = (text: string, subjectName?: string) => {
-    const newVoiceNote = {
-      id: 'vn_' + Date.now(),
+    const now = new Date();
+    const localYear = now.getFullYear();
+    const localMonth = String(now.getMonth() + 1).padStart(2, '0');
+    const localDay = String(now.getDate()).padStart(2, '0');
+    const todayDateStr = `${localYear}-${localMonth}-${localDay}`;
+    const timeStr = now.toLocaleTimeString('ar-SA', { hour: '2-digit', minute: '2-digit' });
+
+    const newCalendarNote: DayCalendarNote = {
+      id: 'cn_' + Date.now() + '_' + Math.random().toString(36).substring(2, 6),
+      date: todayDateStr,
       text,
+      createdAt: now.toISOString(),
+      time: timeStr,
+      source: 'voice',
       subjectName: subjectName || undefined,
-      createdAt: new Date().toLocaleString('ar-SA', {
-        month: 'short',
-        day: 'numeric',
-        hour: '2-digit',
-        minute: '2-digit',
-      }),
     };
 
     setState((prev) => ({
       ...prev,
-      voiceNotes: [newVoiceNote, ...(prev.voiceNotes || [])],
+      calendarNotes: [newCalendarNote, ...(prev.calendarNotes || [])],
+      voiceNotes: [
+        {
+          id: newCalendarNote.id,
+          text,
+          subjectName: subjectName || undefined,
+          createdAt: now.toLocaleString('ar-SA', {
+            month: 'short',
+            day: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit',
+          }),
+        },
+        ...(prev.voiceNotes || []),
+      ],
     }));
 
     // Send voice-transcribed note text directly to Telegram
     TelegramBot.sendVoiceNote(text, state.userName, state.userClass, subjectName);
-    triggerTelegramToast('تم حفظ الملاحظة الصوتية وإرسالها');
+
+    // Exact confirmation message with app emblem/logo in toast
+    triggerTelegramToast('تم حفظ الملاحظة الصوتية وارسلها الى التقويم');
   };
 
   const handleDeleteVoiceNote = (id: string) => {
     setState((prev) => ({
       ...prev,
       voiceNotes: (prev.voiceNotes || []).filter((n) => n.id !== id),
+      calendarNotes: (prev.calendarNotes || []).filter((n) => n.id !== id),
     }));
     triggerTelegramToast('تم حذف الملاحظة');
   };
@@ -635,6 +693,7 @@ export default function App() {
             onTriggerTestAlarm={handleTriggerTestAlarm}
             onAddVoiceNote={handleAddVoiceNote}
             onDeleteVoiceNote={handleDeleteVoiceNote}
+            onNavigateToCalendar={() => setCurrentTab('calendar_schedule')}
           />
         )}
 
@@ -645,6 +704,9 @@ export default function App() {
             onAddScheduleItem={handleAddScheduleItem}
             onDeleteScheduleItem={handleDeleteScheduleItem}
             onSaveCalendarNote={handleSaveCalendarNote}
+            onAddCalendarNote={handleAddCalendarNote}
+            onUpdateCalendarNote={handleUpdateCalendarNote}
+            onDeleteCalendarNoteItem={handleDeleteCalendarNoteItem}
             onDeleteCalendarNote={handleDeleteCalendarNote}
           />
         )}
