@@ -23,6 +23,9 @@ export interface DayCalendarNote {
   date: string; // YYYY-MM-DD
   text: string;
   createdAt: string;
+  time?: string;
+  source?: 'voice' | 'manual';
+  subjectName?: string;
 }
 
 export interface GradeItem {
