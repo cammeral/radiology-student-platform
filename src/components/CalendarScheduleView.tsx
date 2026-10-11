@@ -1,19 +1,23 @@
 import React, { useState } from 'react';
 import { createPortal } from 'react-dom';
-import { AppState, ScheduleItem, DayOfWeek } from '../types';
+import { AppState, ScheduleItem, DayOfWeek, DayCalendarNote } from '../types';
 import { ConfirmModal } from './ConfirmModal';
 import { VoiceInputButton } from './VoiceInputButton';
 import { 
   Calendar as CalendarIcon, Clock, Plus, Trash2, 
-  MapPin, ChevronRight, ChevronLeft, Edit3, FileText, Check, BookOpen, Star
+  MapPin, ChevronRight, ChevronLeft, Edit3, FileText, Check, BookOpen, Star,
+  Mic, Copy, CheckCheck, Sparkles, X
 } from 'lucide-react';
 
 interface CalendarScheduleViewProps {
   state: AppState;
   onAddScheduleItem: (item: ScheduleItem) => void;
   onDeleteScheduleItem: (id: string) => void;
-  onSaveCalendarNote: (date: string, text: string) => void;
-  onDeleteCalendarNote: (date: string) => void;
+  onSaveCalendarNote?: (date: string, text: string) => void;
+  onAddCalendarNote?: (date: string, text: string, source?: 'voice' | 'manual', subjectName?: string) => void;
+  onUpdateCalendarNote?: (id: string, text: string) => void;
+  onDeleteCalendarNoteItem?: (id: string) => void;
+  onDeleteCalendarNote?: (date: string) => void;
 }
 
 const DAYS_NAMES = ['الأحد', 'الإثنين', 'الثلاثاء', 'الأربعاء', 'الخميس', 'الجمعة', 'السبت'];
@@ -22,25 +26,39 @@ const TIME_PRESETS = [
   '08:30 ص', '10:00 ص', '11:30 ص', '01:00 م', '02:30 م'
 ];
 
+const getTodayDateStr = () => {
+  const d = new Date();
+  const year = d.getFullYear();
+  const month = String(d.getMonth() + 1).padStart(2, '0');
+  const day = String(d.getDate()).padStart(2, '0');
+  return `${year}-${month}-${day}`;
+};
+
 export const CalendarScheduleView: React.FC<CalendarScheduleViewProps> = ({
   state,
   onAddScheduleItem,
   onDeleteScheduleItem,
   onSaveCalendarNote,
+  onAddCalendarNote,
+  onUpdateCalendarNote,
+  onDeleteCalendarNoteItem,
   onDeleteCalendarNote,
 }) => {
   const [activeTab, setActiveTab] = useState<'calendar' | 'schedule'>('calendar');
 
   // ===================== CALENDAR STATE =====================
   const [currentDate, setCurrentDate] = useState(new Date());
-  const [selectedCalendarDate, setSelectedCalendarDate] = useState<string>(
-    new Date().toISOString().slice(0, 10)
-  );
+  const [selectedCalendarDate, setSelectedCalendarDate] = useState<string>(getTodayDateStr());
+  
+  // Note creation / editing state
+  const [isWritingNote, setIsWritingNote] = useState(false);
+  const [editingNoteId, setEditingNoteId] = useState<string | null>(null);
   const [noteInput, setNoteInput] = useState('');
-  const [isEditingNote, setIsEditingNote] = useState(false);
+  const [copiedNoteId, setCopiedNoteId] = useState<string | null>(null);
 
   // Deletion confirm states
-  const [confirmDeleteNote, setConfirmDeleteNote] = useState(false);
+  const [noteIdToDelete, setNoteIdToDelete] = useState<string | null>(null);
+  const [confirmDeleteAllDateNotes, setConfirmDeleteAllDateNotes] = useState(false);
   const [scheduleItemToDelete, setScheduleItemToDelete] = useState<string | null>(null);
 
   // Month navigation
@@ -59,23 +77,78 @@ export const CalendarScheduleView: React.FC<CalendarScheduleViewProps> = ({
   const prevMonth = () => setCurrentDate(new Date(year, month - 1, 1));
   const nextMonth = () => setCurrentDate(new Date(year, month + 1, 1));
 
-  const selectedNote = state.calendarNotes.find((n) => n.date === selectedCalendarDate);
+  // Retrieve all notes for selected calendar day
+  const notesForSelectedDay = (state.calendarNotes || []).filter(
+    (n) => n.date === selectedCalendarDate
+  );
+
+  const getArabicDayNameForDate = (dateStr: string) => {
+    try {
+      const [y, m, d] = dateStr.split('-').map(Number);
+      const dateObj = new Date(y, m - 1, d);
+      return DAYS_NAMES[dateObj.getDay()];
+    } catch {
+      return '';
+    }
+  };
 
   const handleSelectDay = (dayNum: number) => {
     const formatted = `${year}-${String(month + 1).padStart(2, '0')}-${String(dayNum).padStart(2, '0')}`;
     setSelectedCalendarDate(formatted);
-    const existing = state.calendarNotes.find((n) => n.date === formatted);
-    setNoteInput(existing ? existing.text : '');
-    setIsEditingNote(!existing);
+    setIsWritingNote(false);
+    setEditingNoteId(null);
+    setNoteInput('');
+  };
+
+  const handleStartAddNote = () => {
+    setEditingNoteId(null);
+    setNoteInput('');
+    setIsWritingNote(true);
+  };
+
+  const handleStartEditNote = (note: DayCalendarNote) => {
+    setEditingNoteId(note.id);
+    setNoteInput(note.text);
+    setIsWritingNote(true);
+  };
+
+  const handleCancelNoteForm = () => {
+    setIsWritingNote(false);
+    setEditingNoteId(null);
+    setNoteInput('');
   };
 
   const handleSaveNoteSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!noteInput.trim()) {
-      setConfirmDeleteNote(true);
+    const trimmed = noteInput.trim();
+    if (!trimmed) return;
+
+    if (editingNoteId) {
+      if (onUpdateCalendarNote) {
+        onUpdateCalendarNote(editingNoteId, trimmed);
+      } else if (onSaveCalendarNote) {
+        onSaveCalendarNote(selectedCalendarDate, trimmed);
+      }
     } else {
-      onSaveCalendarNote(selectedCalendarDate, noteInput.trim());
-      setIsEditingNote(false);
+      if (onAddCalendarNote) {
+        onAddCalendarNote(selectedCalendarDate, trimmed, 'manual');
+      } else if (onSaveCalendarNote) {
+        onSaveCalendarNote(selectedCalendarDate, trimmed);
+      }
+    }
+
+    setIsWritingNote(false);
+    setEditingNoteId(null);
+    setNoteInput('');
+  };
+
+  const handleCopyNote = (id: string, text: string) => {
+    try {
+      navigator.clipboard?.writeText(text);
+      setCopiedNoteId(id);
+      setTimeout(() => setCopiedNoteId(null), 2000);
+    } catch {
+      // ignore
     }
   };
 
@@ -124,7 +197,7 @@ export const CalendarScheduleView: React.FC<CalendarScheduleViewProps> = ({
           onClick={() => setActiveTab('calendar')}
           className={`flex-1 py-2.5 rounded-xl text-xs font-bold transition-all duration-300 flex items-center justify-center gap-2 ${
             activeTab === 'calendar'
-              ? 'bg-indigo-600 text-white shadow-md shadow-indigo-600/25'
+              ? 'bg-gradient-to-r from-cyan-600 to-indigo-600 text-white shadow-md shadow-cyan-600/25'
               : 'text-slate-700 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
           }`}
         >
@@ -136,7 +209,7 @@ export const CalendarScheduleView: React.FC<CalendarScheduleViewProps> = ({
           onClick={() => setActiveTab('schedule')}
           className={`flex-1 py-2.5 rounded-xl text-xs font-bold transition-all duration-300 flex items-center justify-center gap-2 ${
             activeTab === 'schedule'
-              ? 'bg-indigo-600 text-white shadow-md shadow-indigo-600/25'
+              ? 'bg-gradient-to-r from-cyan-600 to-indigo-600 text-white shadow-md shadow-cyan-600/25'
               : 'text-slate-700 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
           }`}
         >
@@ -146,7 +219,7 @@ export const CalendarScheduleView: React.FC<CalendarScheduleViewProps> = ({
       </div>
 
       {/* ========================================================= */}
-      {/* OPTION 1: تقويم الشهر + الضغط على اليوم لكتابة الملاحظات */}
+      {/* OPTION 1: تقويم الشهر + تنظيم الملاحظات واستيعاب أكثر من ملاحظة */}
       {/* ========================================================= */}
       {activeTab === 'calendar' && (
         <div className="space-y-4 animate-classic">
@@ -155,11 +228,12 @@ export const CalendarScheduleView: React.FC<CalendarScheduleViewProps> = ({
           <div className="classic-card rounded-3xl p-5">
             <div className="flex items-center justify-between mb-4">
               <div>
-                <h3 className="text-sm sm:text-base font-black text-slate-900 dark:text-white tracking-tight">
-                  {monthNames[month]} {year}
+                <h3 className="text-sm sm:text-base font-black text-slate-900 dark:text-white tracking-tight flex items-center gap-1.5">
+                  <CalendarIcon className="w-4 h-4 text-cyan-600 dark:text-cyan-400" />
+                  <span>{monthNames[month]} {year}</span>
                 </h3>
                 <span className="text-[11px] text-slate-600 dark:text-slate-400 font-medium">
-                  اضغط على أي يوم لتدوين وتعديل ملاحظاتك
+                  اضغط على أي يوم لاستعراض وإضافة ملاحظاته
                 </span>
               </div>
 
@@ -192,7 +266,7 @@ export const CalendarScheduleView: React.FC<CalendarScheduleViewProps> = ({
             <div className="grid grid-cols-7 gap-1.5 pt-1">
               {/* Empty leading days */}
               {Array.from({ length: firstDayOfMonth }).map((_, idx) => (
-                <div key={`empty-${idx}`} className="h-10" />
+                <div key={`empty-${idx}`} className="h-11" />
               ))}
 
               {/* Days of the month */}
@@ -200,24 +274,43 @@ export const CalendarScheduleView: React.FC<CalendarScheduleViewProps> = ({
                 const dayNum = idx + 1;
                 const dateKey = `${year}-${String(month + 1).padStart(2, '0')}-${String(dayNum).padStart(2, '0')}`;
                 const isSelected = selectedCalendarDate === dateKey;
-                const hasNote = state.calendarNotes.some((n) => n.date === dateKey && n.text.trim());
-                const isToday = new Date().toISOString().slice(0, 10) === dateKey;
+                const dayNotes = (state.calendarNotes || []).filter(
+                  (n) => n.date === dateKey && n.text?.trim()
+                );
+                const notesCount = dayNotes.length;
+                const isToday = getTodayDateStr() === dateKey;
 
                 return (
                   <button
                     key={dayNum}
                     onClick={() => handleSelectDay(dayNum)}
-                    className={`h-11 rounded-2xl flex flex-col items-center justify-center relative transition-all duration-200 tabular-nums text-xs font-bold active:scale-95 ${
+                    className={`h-12 rounded-2xl flex flex-col items-center justify-center relative transition-all duration-200 tabular-nums text-xs font-bold active:scale-95 cursor-pointer ${
                       isSelected
-                        ? 'bg-indigo-600 text-white shadow-md shadow-indigo-600/30 scale-105'
+                        ? 'bg-gradient-to-tr from-cyan-600 to-indigo-600 text-white shadow-md shadow-cyan-600/30 scale-105 z-10'
                         : isToday
-                        ? 'bg-indigo-50 dark:bg-indigo-950/70 text-indigo-700 dark:text-indigo-300 border border-indigo-400/80'
+                        ? 'bg-cyan-50 dark:bg-cyan-950/70 text-cyan-700 dark:text-cyan-300 border border-cyan-400/80'
                         : 'hover:bg-slate-100 dark:hover:bg-slate-800/80 text-slate-800 dark:text-slate-200'
                     }`}
                   >
                     <span>{dayNum}</span>
-                    {hasNote && (
-                      <span className={`w-1.5 h-1.5 rounded-full mt-0.5 ${isSelected ? 'bg-amber-300' : 'bg-amber-500 animate-pulse'}`} />
+                    {notesCount > 0 && (
+                      <span className="flex items-center gap-0.5 mt-0.5">
+                        {notesCount > 1 ? (
+                          <span className={`text-[9px] px-1 py-0.2 rounded-full font-black leading-none ${
+                            isSelected
+                              ? 'bg-amber-300 text-slate-950'
+                              : 'bg-amber-500 text-white shadow-xs'
+                          }`}>
+                            {notesCount}
+                          </span>
+                        ) : (
+                          <span
+                            className={`w-1.5 h-1.5 rounded-full ${
+                              isSelected ? 'bg-amber-300' : 'bg-amber-500 animate-pulse'
+                            }`}
+                          />
+                        )}
+                      </span>
                     )}
                   </button>
                 );
@@ -225,35 +318,51 @@ export const CalendarScheduleView: React.FC<CalendarScheduleViewProps> = ({
             </div>
           </div>
 
-          {/* Classic Notebook / Journal Card (دفتر الملاحظات الكلاسيكي) */}
-          <div className="classic-card rounded-3xl p-5 space-y-3">
+          {/* ======================================================== */}
+          {/* Day Journal / Notebook Card: يستوعب ويرتب ملاحظات متعددة */}
+          {/* ======================================================== */}
+          <div className="classic-card rounded-3xl p-5 space-y-4">
+            
+            {/* Header: اسم اليوم والتاريخ وعدد الملاحظات وزر الإضافة */}
             <div className="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-slate-800">
               <div className="flex items-center gap-2">
-                <FileText className="w-4 h-4 text-indigo-600 dark:text-indigo-400" />
-                <h4 className="text-xs font-bold text-slate-900 dark:text-white">
-                  مفكرة يوم: <span className="tabular-nums text-indigo-600 dark:text-indigo-400 font-black">{selectedCalendarDate}</span>
-                </h4>
+                <div className="w-8 h-8 rounded-xl bg-cyan-500/15 text-cyan-600 dark:text-cyan-400 flex items-center justify-center shrink-0">
+                  <FileText className="w-4 h-4" />
+                </div>
+                <div>
+                  <h4 className="text-xs sm:text-sm font-black text-slate-900 dark:text-white flex items-center gap-1.5">
+                    <span>مفكرة يوم {getArabicDayNameForDate(selectedCalendarDate)}</span>
+                    <span className="tabular-nums text-cyan-600 dark:text-cyan-400 font-extrabold text-xs">
+                      ({selectedCalendarDate})
+                    </span>
+                  </h4>
+                  <span className="text-[11px] text-slate-500 dark:text-slate-400 font-semibold">
+                    {notesForSelectedDay.length > 0
+                      ? `${notesForSelectedDay.length} ملاحظة مسجلة في هذا اليوم`
+                      : 'لا توجد ملاحظات مسجلة لهذا اليوم'}
+                  </span>
+                </div>
               </div>
 
-              {!isEditingNote && selectedNote && (
+              {!isWritingNote && (
                 <button
-                  onClick={() => {
-                    setNoteInput(selectedNote.text);
-                    setIsEditingNote(true);
-                  }}
-                  className="text-xs text-indigo-600 dark:text-indigo-400 hover:underline flex items-center gap-1 font-bold transition"
+                  type="button"
+                  onClick={handleStartAddNote}
+                  className="px-3 py-1.5 rounded-xl bg-gradient-to-r from-cyan-600 to-indigo-600 hover:from-cyan-500 hover:to-indigo-500 text-white text-xs font-bold flex items-center gap-1 shadow-xs transition active:scale-95 cursor-pointer shrink-0"
                 >
-                  <Edit3 className="w-3.5 h-3.5" />
-                  <span>تعديل الملاحظة</span>
+                  <Plus className="w-3.5 h-3.5" />
+                  <span>تدوين ملاحظة +</span>
                 </button>
               )}
             </div>
 
-            {isEditingNote ? (
-              <form onSubmit={handleSaveNoteSubmit} className="space-y-3 animate-classic">
+            {/* Note Input / Dictation Form */}
+            {isWritingNote && (
+              <form onSubmit={handleSaveNoteSubmit} className="space-y-3 p-4 rounded-2xl bg-slate-50/80 dark:bg-slate-950/70 border border-cyan-500/30 animate-classic">
                 <div className="flex items-center justify-between gap-2">
-                  <span className="text-[11px] font-bold text-slate-600 dark:text-slate-400">
-                    اكتب يدويّاً أو تحدث بالصوت وسيكتب التطبيق تلقائياً:
+                  <span className="text-xs font-bold text-slate-800 dark:text-slate-200 flex items-center gap-1.5">
+                    <Edit3 className="w-3.5 h-3.5 text-cyan-600 dark:text-cyan-400" />
+                    <span>{editingNoteId ? 'تعديل نص الملاحظة:' : 'كتابة ملاحظة جديدة لليوم:'}</span>
                   </span>
                   <VoiceInputButton
                     compact
@@ -261,64 +370,184 @@ export const CalendarScheduleView: React.FC<CalendarScheduleViewProps> = ({
                     onTranscript={(txt) => setNoteInput((prev) => (prev ? `${prev} ${txt}` : txt))}
                   />
                 </div>
+
                 <textarea
-                  rows={4}
-                  placeholder="اكتب ملاحظاتك، واجباتك، أو اضغط على (تحدث ليكتب) وتكلم..."
+                  rows={3}
+                  placeholder="اكتب تفاصيل الملاحظة هنا، أو اضغط (تحدث ليكتب) للتحدث بالصوت..."
                   value={noteInput}
                   onChange={(e) => setNoteInput(e.target.value)}
-                  className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-700 rounded-2xl p-4 text-xs text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none focus:border-indigo-500 transition shadow-inner leading-relaxed"
+                  className="w-full bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-2xl p-3.5 text-xs text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none focus:border-cyan-500 transition shadow-inner leading-relaxed"
                   autoFocus
                 />
-                <div className="flex gap-2 justify-end">
-                  {selectedNote && (
-                    <button
-                      type="button"
-                      onClick={() => setConfirmDeleteNote(true)}
-                      className="px-3.5 py-2 rounded-xl text-rose-600 dark:text-rose-400 text-xs font-bold hover:bg-rose-50 dark:hover:bg-rose-950/20 transition"
-                    >
-                      حذف الملاحظة
-                    </button>
-                  )}
+
+                <div className="flex items-center justify-end gap-2">
+                  <button
+                    type="button"
+                    onClick={handleCancelNoteForm}
+                    className="px-3.5 py-1.5 rounded-xl bg-slate-200/80 dark:bg-slate-800 text-slate-700 dark:text-slate-300 text-xs font-bold hover:bg-slate-300 dark:hover:bg-slate-700 transition"
+                  >
+                    إلغاء
+                  </button>
                   <button
                     type="submit"
-                    className="px-5 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold shadow-md shadow-indigo-600/25 transition active:scale-95"
+                    className="px-4 py-1.5 rounded-xl bg-gradient-to-r from-cyan-600 to-indigo-600 hover:from-cyan-500 hover:to-indigo-500 text-white text-xs font-bold shadow-md shadow-cyan-600/25 transition active:scale-95 cursor-pointer"
                   >
-                    حفظ ومزامنة الملاحظة
+                    {editingNoteId ? 'حفظ التعديل' : 'حفظ في مفكرة اليوم 📅'}
                   </button>
                 </div>
               </form>
-            ) : selectedNote ? (
-              <div className="p-4 rounded-2xl bg-slate-50 dark:bg-slate-950/80 border border-slate-200/80 dark:border-slate-800 text-xs text-slate-800 dark:text-slate-200 leading-relaxed whitespace-pre-wrap font-medium">
-                {selectedNote.text}
+            )}
+
+            {/* List of notes organized for this day */}
+            {notesForSelectedDay.length > 0 ? (
+              <div className="space-y-2.5">
+                {notesForSelectedDay.map((note, index) => {
+                  const isCopied = copiedNoteId === note.id;
+                  const isVoice = note.source === 'voice';
+
+                  return (
+                    <div
+                      key={note.id || index}
+                      className="p-4 rounded-2xl bg-white dark:bg-slate-950/80 border border-slate-200/90 dark:border-slate-800/90 hover:border-cyan-500/40 transition-all duration-200 shadow-2xs space-y-2"
+                    >
+                      {/* Top Bar: Badge, Time, Actions */}
+                      <div className="flex items-center justify-between gap-2 border-b border-slate-100 dark:border-slate-800/80 pb-2">
+                        <div className="flex items-center gap-2">
+                          {isVoice ? (
+                            <span className="px-2.5 py-1 rounded-xl bg-cyan-500/15 text-cyan-700 dark:text-cyan-300 border border-cyan-500/30 text-[10px] font-black flex items-center gap-1">
+                              <Mic className="w-3 h-3 text-cyan-600 dark:text-cyan-400" />
+                              <span>ملاحظة صوتية</span>
+                            </span>
+                          ) : (
+                            <span className="px-2.5 py-1 rounded-xl bg-indigo-500/15 text-indigo-700 dark:text-indigo-300 border border-indigo-500/30 text-[10px] font-black flex items-center gap-1">
+                              <Edit3 className="w-3 h-3 text-indigo-600 dark:text-indigo-400" />
+                              <span>تدوين يدوي</span>
+                            </span>
+                          )}
+
+                          {note.time && (
+                            <span className="text-[11px] text-slate-500 dark:text-slate-400 font-bold tabular-nums flex items-center gap-1">
+                              <Clock className="w-3 h-3" />
+                              <span>{note.time}</span>
+                            </span>
+                          )}
+
+                          {note.subjectName && (
+                            <span className="text-[10px] bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 px-2 py-0.5 rounded-lg font-bold">
+                              {note.subjectName}
+                            </span>
+                          )}
+                        </div>
+
+                        {/* Action buttons */}
+                        <div className="flex items-center gap-1 shrink-0">
+                          <button
+                            type="button"
+                            onClick={() => handleCopyNote(note.id, note.text)}
+                            className="p-1.5 rounded-xl text-slate-400 hover:text-cyan-600 dark:hover:text-cyan-400 hover:bg-cyan-500/10 transition"
+                            title="نسخ نص الملاحظة"
+                          >
+                            {isCopied ? (
+                              <CheckCheck className="w-3.5 h-3.5 text-teal-500" />
+                            ) : (
+                              <Copy className="w-3.5 h-3.5" />
+                            )}
+                          </button>
+
+                          <button
+                            type="button"
+                            onClick={() => handleStartEditNote(note)}
+                            className="p-1.5 rounded-xl text-slate-400 hover:text-indigo-600 dark:hover:text-indigo-400 hover:bg-indigo-500/10 transition"
+                            title="تعديل الملاحظة"
+                          >
+                            <Edit3 className="w-3.5 h-3.5" />
+                          </button>
+
+                          <button
+                            type="button"
+                            onClick={() => setNoteIdToDelete(note.id)}
+                            className="p-1.5 rounded-xl text-slate-400 hover:text-rose-600 hover:bg-rose-500/10 transition"
+                            title="حذف الملاحظة"
+                          >
+                            <Trash2 className="w-3.5 h-3.5" />
+                          </button>
+                        </div>
+                      </div>
+
+                      {/* Content */}
+                      <p className="text-xs text-slate-800 dark:text-slate-100 leading-relaxed whitespace-pre-wrap font-medium pt-0.5">
+                        {note.text}
+                      </p>
+                    </div>
+                  );
+                })}
+
+                {/* Clear all notes for this date */}
+                {notesForSelectedDay.length > 1 && (
+                  <div className="pt-1 text-center">
+                    <button
+                      type="button"
+                      onClick={() => setConfirmDeleteAllDateNotes(true)}
+                      className="text-[11px] text-rose-500 hover:text-rose-600 font-bold hover:underline"
+                    >
+                      حذف جميع ملاحظات يوم ({selectedCalendarDate})
+                    </button>
+                  </div>
+                )}
               </div>
             ) : (
-              <div className="text-center py-6 text-slate-600 dark:text-slate-400 text-xs space-y-2.5">
-                <p>لا توجد ملاحظات مسجلة لهذا اليوم ({selectedCalendarDate}).</p>
-                <button
-                  onClick={() => {
-                    setNoteInput('');
-                    setIsEditingNote(true);
-                  }}
-                  className="px-4 py-2 rounded-2xl bg-indigo-50 dark:bg-indigo-950/50 text-indigo-700 dark:text-indigo-300 font-bold text-xs border border-indigo-200 dark:border-indigo-800 transition active:scale-95 inline-flex items-center gap-1.5"
-                >
-                  <Plus className="w-3.5 h-3.5" />
-                  <span>كتابة ملاحظة لهذا اليوم</span>
-                </button>
-              </div>
+              !isWritingNote && (
+                <div className="text-center py-7 text-slate-600 dark:text-slate-400 text-xs space-y-3 bg-slate-50/50 dark:bg-slate-950/40 rounded-2xl border border-dashed border-slate-200 dark:border-slate-800/80 p-5">
+                  <div className="w-10 h-10 rounded-2xl bg-cyan-500/10 text-cyan-600 dark:text-cyan-400 mx-auto flex items-center justify-center">
+                    <FileText className="w-5 h-5" />
+                  </div>
+                  <p className="font-bold text-slate-800 dark:text-slate-200">
+                    لا توجد ملاحظات مسجلة ليوم {getArabicDayNameForDate(selectedCalendarDate)} ({selectedCalendarDate}).
+                  </p>
+                  <p className="text-[11px] text-slate-500 dark:text-slate-400 max-w-xs mx-auto">
+                    يمكنك تدوين ملاحظة جديدة هنا، أو تسجيل ملاحظة صوتية من الصفحة الرئيسية وسيتم حفظها هنا تلقائياً.
+                  </p>
+                  <button
+                    onClick={handleStartAddNote}
+                    className="px-4 py-2 rounded-2xl bg-cyan-50 dark:bg-cyan-950/50 text-cyan-700 dark:text-cyan-300 font-bold text-xs border border-cyan-200 dark:border-cyan-800 transition active:scale-95 inline-flex items-center gap-1.5 cursor-pointer shadow-2xs"
+                  >
+                    <Plus className="w-3.5 h-3.5" />
+                    <span>تدوين ملاحظة جديدة لهذا اليوم</span>
+                  </button>
+                </div>
+              )
             )}
           </div>
 
-          {/* Confirm Delete Note Modal */}
+          {/* Confirm Delete Single Note Modal */}
           <ConfirmModal
-            isOpen={confirmDeleteNote}
+            isOpen={!!noteIdToDelete}
             title="تأكيد حذف الملاحظة"
-            message={`هل أنت متأكد من رغبتك في حذف ملاحظة يوم (${selectedCalendarDate})؟`}
-            onCancel={() => setConfirmDeleteNote(false)}
+            message="هل أنت متأكد من رغبتك في حذف هذه الملاحظة من التقويم؟"
+            onCancel={() => setNoteIdToDelete(null)}
             onConfirm={() => {
-              onDeleteCalendarNote(selectedCalendarDate);
-              setNoteInput('');
-              setIsEditingNote(false);
-              setConfirmDeleteNote(false);
+              if (noteIdToDelete) {
+                if (onDeleteCalendarNoteItem) {
+                  onDeleteCalendarNoteItem(noteIdToDelete);
+                } else if (onDeleteCalendarNote) {
+                  onDeleteCalendarNote(selectedCalendarDate);
+                }
+                setNoteIdToDelete(null);
+              }
+            }}
+          />
+
+          {/* Confirm Delete All Notes for Selected Date Modal */}
+          <ConfirmModal
+            isOpen={confirmDeleteAllDateNotes}
+            title="تأكيد حذف جميع ملاحظات اليوم"
+            message={`هل أنت متأكد من رغبتك في حذف كافة الملاحظات المسجلة ليوم (${selectedCalendarDate})؟`}
+            onCancel={() => setConfirmDeleteAllDateNotes(false)}
+            onConfirm={() => {
+              if (onDeleteCalendarNote) {
+                onDeleteCalendarNote(selectedCalendarDate);
+              }
+              setConfirmDeleteAllDateNotes(false);
             }}
           />
 
@@ -341,14 +570,14 @@ export const CalendarScheduleView: React.FC<CalendarScheduleViewProps> = ({
                 <button
                   key={idx}
                   onClick={() => setSelectedScheduleDay(idx as DayOfWeek)}
-                  className={`flex-1 min-w-[56px] py-2 px-1 rounded-xl text-center transition-all duration-200 flex flex-col items-center justify-center active:scale-95 ${
+                  className={`flex-1 min-w-[56px] py-2 px-1 rounded-xl text-center transition-all duration-200 flex flex-col items-center justify-center active:scale-95 cursor-pointer ${
                     isSelected
-                      ? 'bg-indigo-600 text-white shadow-md shadow-indigo-600/25 font-bold'
+                      ? 'bg-gradient-to-tr from-cyan-600 to-indigo-600 text-white shadow-md shadow-cyan-600/25 font-bold'
                       : 'text-slate-700 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 font-semibold'
                   }`}
                 >
                   <span className="text-xs">{name}</span>
-                  <span className={`text-[10px] mt-0.5 tabular-nums ${isSelected ? 'text-indigo-100' : 'text-slate-500 dark:text-slate-500'}`}>
+                  <span className={`text-[10px] mt-0.5 tabular-nums ${isSelected ? 'text-cyan-100' : 'text-slate-500 dark:text-slate-500'}`}>
                     ({count})
                   </span>
                 </button>
