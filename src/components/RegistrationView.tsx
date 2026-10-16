@@ -58,49 +58,42 @@ export const RegistrationView: React.FC<RegistrationViewProps> = ({ onRegister }
             </div>
 
             <div>
-              <span className="text-[11px] font-bold px-3 py-1 rounded-full bg-cyan-950/80 border border-cyan-500/40 text-cyan-300 inline-flex items-center gap-1.5 shadow-sm">
-                <Sparkles className="w-3 h-3 text-cyan-400" />
-                <span>قسم تقنيات الأشعة والتصوير الطبي</span>
-              </span>
-              <h1 className="text-xl font-black text-white mt-2 tracking-tight">
-                تسجيل بيانات طالب الأشعة
+              <h1 className="text-lg font-bold text-white tracking-tight">
+                تسجيل بيانات الطالب
               </h1>
-              <p className="text-xs text-slate-400 mt-1 max-w-xs mx-auto leading-relaxed">
-                المنصة الجامعية الذكية لجدول المحاضرات والتدريب السريري، وحساب السعيات والامتحانات التقويمية.
+              <p className="text-xs text-slate-400 mt-0.5">
+                قسم تقنيات الأشعة والتصوير الطبي
               </p>
             </div>
           </div>
 
           {/* Registration Form */}
-          <form onSubmit={handleSubmit} className="space-y-4 pt-1">
+          <form onSubmit={handleSubmit} className="space-y-3.5 pt-1">
             {/* Student Name */}
             <div>
-              <label className="block text-xs font-bold text-slate-300 mb-1.5 flex items-center gap-1.5">
+              <label className="block text-xs font-semibold text-slate-300 mb-1 flex items-center gap-1.5">
                 <User className="w-3.5 h-3.5 text-cyan-400" />
-                <span>اسم الطالب الثلاثي</span>
+                <span>الاسم الثلاثي</span>
               </label>
               <input
                 type="text"
-                placeholder="مثال: علي حسن عبد الرضا"
+                placeholder="اسم الطالب..."
                 value={name}
                 onChange={(e) => {
                   setName(e.target.value);
                   setError('');
                 }}
-                className="w-full bg-slate-950/80 border border-slate-700/80 focus:border-cyan-500 rounded-2xl px-4 py-3 text-sm text-white focus:outline-none transition shadow-inner placeholder:text-slate-500 font-medium"
+                className="w-full bg-slate-950/80 border border-slate-700/80 focus:border-cyan-500 rounded-xl px-3.5 py-2.5 text-xs text-white focus:outline-none transition placeholder:text-slate-500 font-medium"
                 autoFocus
                 required
               />
             </div>
 
-            {/* University Stage Selection (المرحلة الجامعية فقط: الأولى، الثانية، الثالثة، الرابعة) */}
+            {/* University Stage Selection */}
             <div>
-              <label className="block text-xs font-bold text-slate-300 mb-2 flex items-center justify-between">
-                <span className="flex items-center gap-1.5">
-                  <Layers className="w-3.5 h-3.5 text-cyan-400" />
-                  <span>المرحلة الدراسية</span>
-                </span>
-                <span className="text-[10px] text-cyan-400/80 font-mono">4 سنوات دراسية</span>
+              <label className="block text-xs font-semibold text-slate-300 mb-1.5 flex items-center gap-1.5">
+                <Layers className="w-3.5 h-3.5 text-cyan-400" />
+                <span>المرحلة الدراسية</span>
               </label>
 
               {/* Selection cards for the 4 stages */}
@@ -115,61 +108,43 @@ export const RegistrationView: React.FC<RegistrationViewProps> = ({ onRegister }
                         setStudentStage(stage.id);
                         setError('');
                       }}
-                      className={`p-3 rounded-2xl text-right transition-all duration-200 border relative flex flex-col justify-between ${
+                      className={`p-2.5 rounded-xl text-right transition-all border relative flex flex-col justify-between ${
                         isSelected
-                          ? 'bg-gradient-to-br from-cyan-950/80 to-indigo-950/90 border-cyan-400 text-white shadow-lg shadow-cyan-950/60 ring-1 ring-cyan-400/50'
+                          ? 'bg-gradient-to-br from-cyan-950/80 to-indigo-950/90 border-cyan-400 text-white shadow-sm'
                           : 'bg-slate-950/50 hover:bg-slate-800/60 border-slate-800 text-slate-300'
                       }`}
                     >
-                      <div className="flex items-center justify-between mb-1">
-                        <span className="text-[10px] font-mono text-cyan-400/90 font-bold">
+                      <div className="flex items-center justify-between mb-0.5">
+                        <span className="text-[10px] font-mono text-cyan-400 font-bold">
                           {stage.tag}
                         </span>
                         {isSelected && (
-                          <span className="w-4 h-4 rounded-full bg-cyan-400 text-slate-950 flex items-center justify-center">
-                            <Check className="w-3 h-3 stroke-[3]" />
+                          <span className="w-3.5 h-3.5 rounded-full bg-cyan-400 text-slate-950 flex items-center justify-center">
+                            <Check className="w-2.5 h-2.5 stroke-[3]" />
                           </span>
                         )}
                       </div>
-                      <h4 className="text-xs font-black tracking-tight">{stage.label}</h4>
-                      <p className="text-[9px] text-slate-400 mt-1 line-clamp-1 leading-snug">
-                        {stage.subtitle}
-                      </p>
+                      <h4 className="text-xs font-bold tracking-tight">{stage.label}</h4>
                     </button>
                   );
                 })}
               </div>
-
-              {/* Explicit notification banner for stage selection */}
-              <div className="mt-2.5 p-3 rounded-2xl bg-gradient-to-r from-amber-500/10 via-cyan-500/15 to-teal-500/10 border border-amber-500/30 text-right flex items-start gap-2.5 shadow-sm">
-                <div className="w-6 h-6 rounded-lg bg-amber-500/20 text-amber-400 flex items-center justify-center shrink-0 mt-0.5">
-                  <Bell className="w-3.5 h-3.5 animate-bounce" />
-                </div>
-                <div className="flex-1 min-w-0">
-                  <span className="text-[11px] font-black text-amber-300 block">
-                    🔔 تنبيه تخصيص المرحلة:
-                  </span>
-                  <p className="text-[10px] text-slate-300 mt-0.5 leading-relaxed font-medium">
-                    عند اختيارك للمرحلة، سوف تظهر لك محاضراتك ومناهجك والكتب والملازم الخاصة بهذه المرحلة فقط.
-                  </p>
-                </div>
-              </div>
             </div>
 
             {error && (
-              <p className="text-xs text-rose-400 font-bold text-center bg-rose-500/10 border border-rose-500/20 py-2 rounded-xl">
+              <p className="text-xs text-rose-400 font-semibold text-center bg-rose-500/10 border border-rose-500/20 py-1.5 rounded-lg">
                 {error}
               </p>
             )}
 
             {/* Submit Button */}
-            <div className="pt-2">
+            <div className="pt-1">
               <button
                 type="submit"
-                className="w-full py-3.5 px-4 rounded-2xl bg-gradient-to-r from-cyan-600 via-teal-600 to-indigo-600 hover:from-cyan-500 hover:to-indigo-500 text-white font-black text-sm shadow-xl shadow-cyan-600/30 flex items-center justify-center gap-2 transition active:scale-[0.98] cursor-pointer"
+                className="w-full py-2.5 px-4 rounded-xl bg-gradient-to-r from-cyan-600 to-indigo-600 hover:from-cyan-500 hover:to-indigo-500 text-white font-bold text-xs shadow-md shadow-cyan-600/20 flex items-center justify-center gap-1.5 transition active:scale-[0.98] cursor-pointer"
               >
-                <span>دخول المنصة الأكاديمية</span>
-                <ArrowLeft className="w-4 h-4 -scale-x-100" />
+                <span>دخول المنصة</span>
+                <ArrowLeft className="w-3.5 h-3.5 -scale-x-100" />
               </button>
             </div>
           </form>
