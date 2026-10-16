@@ -39,39 +39,33 @@ export const Header: React.FC<HeaderProps> = ({
     <header className="sticky top-0 z-40 w-full pt-safe border-b backdrop-blur-2xl transition-colors duration-300 px-4 pb-3 border-slate-200 dark:border-slate-800/90 bg-white/95 dark:bg-slate-900/95 shadow-xs">
       {/* Offline Alert Bar */}
       {!isOnline && (
-        <div className="mb-2 py-1.5 px-3.5 rounded-2xl bg-cyan-500/15 border border-cyan-500/30 text-cyan-800 dark:text-cyan-300 text-xs flex items-center justify-between animate-classic">
-          <div className="flex items-center gap-2 font-bold">
+        <div className="mb-2 py-1 px-3 rounded-xl bg-amber-500/15 border border-amber-500/30 text-amber-900 dark:text-amber-200 text-xs flex items-center justify-between animate-classic">
+          <div className="flex items-center gap-1.5 font-bold">
             <WifiOff className="w-3.5 h-3.5 shrink-0" />
-            <span>يعمل بدون اتصال بالإنترنت (محفوظ محلياً)</span>
+            <span>يعمل بدون إنترنت (محفوظ محلياً)</span>
           </div>
-          <span className="text-[10px] bg-cyan-500/20 px-2 py-0.5 rounded-full font-bold">Offline Ready</span>
         </div>
       )}
 
       <div className="flex items-center justify-between max-w-lg mx-auto">
         {/* Brand / Logo */}
-        <div className="flex items-center gap-3">
-          <div className="relative">
-            <div className="w-10 h-10 rounded-2xl bg-gradient-to-tr from-cyan-600 via-indigo-600 to-teal-500 flex items-center justify-center text-white shadow-md shadow-cyan-600/25 border border-white/20 transition-transform duration-300 hover:scale-105 shrink-0">
-              <Activity className="w-5 h-5 drop-shadow animate-pulse" />
-            </div>
-            <span className="absolute -bottom-1 -right-1 w-3.5 h-3.5 rounded-full bg-slate-900 border border-cyan-400 text-cyan-300 flex items-center justify-center">
-              <Zap className="w-2 h-2 fill-cyan-400" />
-            </span>
+        <div className="flex items-center gap-2.5">
+          <div className="w-9 h-9 rounded-xl bg-gradient-to-tr from-cyan-600 via-indigo-600 to-teal-500 flex items-center justify-center text-white shadow-xs shrink-0">
+            <Activity className="w-4 h-4 drop-shadow" />
           </div>
 
           <div>
             <div className="flex items-center gap-1.5">
-              <h1 className="text-sm sm:text-base font-black tracking-tight text-slate-900 dark:text-white">
-                تقنيات الأشعة | راديو بلس
+              <h1 className="text-sm font-bold tracking-tight text-slate-900 dark:text-white">
+                تقنيات الأشعة
               </h1>
               {userClass && (
-                <span className="text-[10px] font-bold px-2 py-0.5 rounded-lg bg-cyan-50 dark:bg-cyan-500/15 text-cyan-700 dark:text-cyan-300 border border-cyan-200 dark:border-cyan-500/30 truncate max-w-[120px]">
-                  {userClass}
+                <span className="text-[10px] text-cyan-700 dark:text-cyan-300 font-semibold">
+                  · {userClass}
                 </span>
               )}
             </div>
-            <p className="text-[11px] text-slate-600 dark:text-slate-400 font-semibold">
+            <p className="text-[11px] text-slate-500 dark:text-slate-400">
               {getTodayArabicDate()}
             </p>
           </div>
