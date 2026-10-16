@@ -260,6 +260,7 @@ export const LECTURES_DATA: CurriculumStage[] = [
             lectures: [
               { name: 'المحاضرة 1: فيزياء الموجات فوق الصوتية (Linear Accelerators - LINAC)', url: 'https://raw.githubusercontent.com/cammeral/xray-book/0279122eaf287bfaf50b86dda6c006da56c39969/%D8%A7%D9%84%D8%B3%D9%88%D9%86%D8%A7%D8%B1/Principle%20of%20ultrasound%20and%20its%20terms.pdf' },
               { name: 'المحاضرة 1: مبدأ الموجات فوق الصوتية ومصطلحاتها (Linear Accelerators - LINAC)', url: 'https://raw.githubusercontent.com/cammeral/xray-book/0279122eaf287bfaf50b86dda6c006da56c39969/%D8%A7%D9%84%D8%B3%D9%88%D9%86%D8%A7%D8%B1/%D8%A7%D9%84%D9%85%D8%AD%D8%A7%D8%B6%D8%B1%D8%A9%20%D8%A7%D9%84%D8%A7%D9%88%D9%84%D9%89.pdf' },
+              { name: 'المحاضرة 2: Normal and Abnormal liver (Linear Accelerators - LINAC)', url: 'https://raw.githubusercontent.com/cammeral/xray-book/22b963673c1f76891a52b8c39a2ae4568b45048a/%D8%A7%D9%84%D8%B3%D9%88%D9%86%D8%A7%D8%B1/%D8%A7%D9%84%D8%B3%D9%88%D9%86%D8%A7%D8%B1%20%D8%A7%D9%84%D9%85%D8%AD%D8%A7%D8%B6%D8%B1%D8%A9%20%D8%A7%D9%84%D8%AB%D8%A7%D9%86%D9%8A%D8%A9.pdf' },
             ],
           },
           {
