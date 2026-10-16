@@ -447,9 +447,9 @@ export const LibraryView: React.FC<LibraryViewProps> = ({
 
           {/* Upload Banner Button Inside Folder */}
           <div className="mt-4 pt-4 border-t border-slate-200/80 dark:border-slate-800 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-2.5">
-            <label className="cursor-pointer flex-1 py-3 px-4 rounded-2xl bg-gradient-to-r from-indigo-600 to-indigo-700 hover:from-indigo-500 hover:to-indigo-600 text-white font-bold text-xs flex items-center justify-center gap-2 shadow-md shadow-indigo-600/20 transition active:scale-[0.98]">
+            <label className="cursor-pointer flex-1 py-2.5 px-4 rounded-2xl bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs flex items-center justify-center gap-2 shadow-xs transition active:scale-[0.98]">
               <Upload className="w-4 h-4" />
-              <span>رفع كتاب PDF أو صورة أو فيديو للمجلد</span>
+              <span>رفع ملف</span>
               <input
                 type="file"
                 accept=".pdf,image/*,video/*,.doc,.docx"
@@ -837,10 +837,10 @@ export const LibraryView: React.FC<LibraryViewProps> = ({
             </div>
             <div>
               <h2 className="text-base sm:text-lg font-black text-slate-900 dark:text-white">
-                المكتبة والمجلدات الدراسية
+                المكتبة
               </h2>
-              <p className="text-xs font-medium text-slate-500 dark:text-slate-400 mt-0.5">
-                نظم ملازمك، كتبك، وملخصاتك في مجلدات ملونة ومحمية
+              <p className="text-xs text-slate-500 dark:text-slate-400">
+                الملفات والمجلدات الدراسية
               </p>
             </div>
           </div>
@@ -854,8 +854,8 @@ export const LibraryView: React.FC<LibraryViewProps> = ({
             onMouseLeave={cancelLongPress}
             onTouchStart={startLongPress}
             onTouchEnd={cancelLongPress}
-            className="px-4 py-2.5 rounded-2xl bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs flex items-center gap-1.5 shadow-md shadow-indigo-600/20 transition active:scale-95 select-none touch-manipulation shrink-0"
-            title="اضغط لإضافة مجلد (أو اضغط مطولاً لفتح الخزنة السرية)"
+            className="px-3.5 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-semibold text-xs flex items-center gap-1.5 shadow-xs transition active:scale-95 select-none touch-manipulation shrink-0 cursor-pointer"
+            title="إضافة مجلد"
           >
             <FolderPlus className="w-4 h-4" />
             <span>مجلد جديد</span>
@@ -863,21 +863,21 @@ export const LibraryView: React.FC<LibraryViewProps> = ({
         </div>
 
         {/* Quick Library Stats Grid */}
-        <div className="grid grid-cols-3 gap-2.5 pt-1">
+        <div className="grid grid-cols-3 gap-2 pt-1">
           <button
             type="button"
             onClick={() => setLibrarySection('folders')}
-            className={`p-3 rounded-2xl border text-center transition ${
+            className={`p-2.5 rounded-xl border text-center transition ${
               librarySection === 'folders'
                 ? 'bg-indigo-50/80 dark:bg-indigo-950/40 border-indigo-300 dark:border-indigo-800/80'
                 : 'bg-slate-50 dark:bg-slate-800/60 border-slate-200/80 dark:border-slate-800 hover:border-indigo-300'
             }`}
           >
-            <span className="text-lg font-black font-mono text-indigo-600 dark:text-indigo-400 block leading-tight">
+            <span className="text-base font-bold font-mono text-indigo-600 dark:text-indigo-400 block leading-tight">
               {publicFolders.length}
             </span>
-            <span className="text-[11px] font-bold text-slate-700 dark:text-slate-300 mt-0.5 block">
-              مجلدات المواد
+            <span className="text-[11px] font-semibold text-slate-600 dark:text-slate-300 mt-0.5 block">
+              المجلدات
             </span>
           </button>
 
@@ -887,17 +887,17 @@ export const LibraryView: React.FC<LibraryViewProps> = ({
               setLibrarySection('all_files');
               setGlobalFileFilter('pdf');
             }}
-            className={`p-3 rounded-2xl border text-center transition ${
+            className={`p-2.5 rounded-xl border text-center transition ${
               librarySection === 'all_files' && globalFileFilter === 'pdf'
                 ? 'bg-rose-50/80 dark:bg-rose-950/40 border-rose-300 dark:border-rose-800/80'
                 : 'bg-slate-50 dark:bg-slate-800/60 border-slate-200/80 dark:border-slate-800 hover:border-rose-300'
             }`}
           >
-            <span className="text-lg font-black font-mono text-rose-600 dark:text-rose-400 block leading-tight">
+            <span className="text-base font-bold font-mono text-rose-600 dark:text-rose-400 block leading-tight">
               {totalPublicBooks}
             </span>
-            <span className="text-[11px] font-bold text-slate-700 dark:text-slate-300 mt-0.5 block">
-              كتب وملازم PDF
+            <span className="text-[11px] font-semibold text-slate-600 dark:text-slate-300 mt-0.5 block">
+              مستندات PDF
             </span>
           </button>
 
@@ -907,17 +907,17 @@ export const LibraryView: React.FC<LibraryViewProps> = ({
               setLibrarySection('all_files');
               setGlobalFileFilter('image');
             }}
-            className={`p-3 rounded-2xl border text-center transition ${
+            className={`p-2.5 rounded-xl border text-center transition ${
               librarySection === 'all_files' && globalFileFilter === 'image'
                 ? 'bg-emerald-50/80 dark:bg-emerald-950/40 border-emerald-300 dark:border-emerald-800/80'
                 : 'bg-slate-50 dark:bg-slate-800/60 border-slate-200/80 dark:border-slate-800 hover:border-emerald-300'
             }`}
           >
-            <span className="text-lg font-black font-mono text-emerald-600 dark:text-emerald-400 block leading-tight">
+            <span className="text-base font-bold font-mono text-emerald-600 dark:text-emerald-400 block leading-tight">
               {totalPublicMedia}
             </span>
-            <span className="text-[11px] font-bold text-slate-700 dark:text-slate-300 mt-0.5 block">
-              صور وفيديوهات
+            <span className="text-[11px] font-semibold text-slate-600 dark:text-slate-300 mt-0.5 block">
+              الوسائط
             </span>
           </button>
         </div>
@@ -934,7 +934,7 @@ export const LibraryView: React.FC<LibraryViewProps> = ({
             }`}
           >
             <Folder className="w-4 h-4" />
-            <span>عرض المجلدات ({publicFolders.length})</span>
+            <span>المجلدات ({publicFolders.length})</span>
           </button>
           <button
             type="button"
@@ -949,7 +949,7 @@ export const LibraryView: React.FC<LibraryViewProps> = ({
             }`}
           >
             <FileText className="w-4 h-4" />
-            <span>عرض كل الملفات ({browsablePublicFiles.length})</span>
+            <span>كل الملفات ({browsablePublicFiles.length})</span>
           </button>
         </div>
       </div>
@@ -964,8 +964,8 @@ export const LibraryView: React.FC<LibraryViewProps> = ({
             onChange={(e) => setSearchQuery(e.target.value)}
             placeholder={
               librarySection === 'folders'
-                ? 'ابحث عن مجلد مادة أو ملف بداخله...'
-                : 'ابحث في جميع الكتب والملخصات والملفات...'
+                ? 'ابحث عن مجلد أو ملف...'
+                : 'ابحث في الملفات...'
             }
             className="w-full pr-10 pl-4 py-2.5 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-xs font-semibold text-slate-900 dark:text-white placeholder:text-slate-400 focus:outline-none focus:border-indigo-500 transition shadow-2xs"
           />
@@ -1012,10 +1012,10 @@ export const LibraryView: React.FC<LibraryViewProps> = ({
       {librarySection === 'all_files' && (
         <div className="flex gap-1.5 overflow-x-auto no-scrollbar pb-0.5">
           {[
-            { id: 'all', label: 'جميع الملفات', count: browsablePublicFiles.length },
-            { id: 'pdf', label: 'كتب وملازم PDF', count: browsablePublicFiles.filter((f) => f.type === 'pdf').length },
-            { id: 'image', label: 'صور وملخصات', count: browsablePublicFiles.filter((f) => f.type === 'image').length },
-            { id: 'video', label: 'فيديوهات شرح', count: browsablePublicFiles.filter((f) => f.type === 'video').length },
+            { id: 'all', label: 'الكل', count: browsablePublicFiles.length },
+            { id: 'pdf', label: 'PDF', count: browsablePublicFiles.filter((f) => f.type === 'pdf').length },
+            { id: 'image', label: 'صور', count: browsablePublicFiles.filter((f) => f.type === 'image').length },
+            { id: 'video', label: 'فيديو', count: browsablePublicFiles.filter((f) => f.type === 'video').length },
           ].map((tab) => (
             <button
               key={tab.id}
@@ -1045,15 +1045,12 @@ export const LibraryView: React.FC<LibraryViewProps> = ({
       {/* 3A. Public Folders Display (Grid or List) */}
       {librarySection === 'folders' ? (
         filteredPublicFolders.length === 0 ? (
-          <div className="classic-card rounded-3xl p-8 text-center">
-            <div className="w-14 h-14 rounded-2xl bg-amber-500/10 text-amber-500 mx-auto flex items-center justify-center mb-3">
-              <Folder className="w-7 h-7 fill-amber-500" />
+          <div className="classic-card rounded-2xl p-6 text-center">
+            <div className="w-12 h-12 rounded-xl bg-amber-500/10 text-amber-500 mx-auto flex items-center justify-center mb-2">
+              <Folder className="w-6 h-6 fill-amber-500" />
             </div>
-            <p className="text-sm font-black text-slate-900 dark:text-white">
-              {publicFolders.length === 0 ? 'لا توجد مجلدات دراسية بعد' : 'لا توجد مجلدات مطابقة للبحث'}
-            </p>
-            <p className="text-xs text-slate-500 dark:text-slate-400 mt-1 max-w-xs mx-auto leading-relaxed">
-              اضغط على زر "مجلد جديد" لإضافة مجلدات موادك وسلايداتك (مثل: التشريح الشعاعي، المفراس CT، الرنين MRI).
+            <p className="text-xs font-bold text-slate-800 dark:text-slate-200">
+              {publicFolders.length === 0 ? 'لا توجد مجلدات بعد' : 'لا توجد نتائج'}
             </p>
           </div>
         ) : viewMode === 'grid' ? (
@@ -1421,10 +1418,10 @@ export const LibraryView: React.FC<LibraryViewProps> = ({
               <a
                 href={getDownloadUrl(previewFile.dataUrl)}
                 download={previewFile.name}
-                className="px-5 py-2.5 rounded-2xl bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs flex items-center gap-2 shadow-md shadow-indigo-600/25 transition active:scale-95"
+                className="px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs flex items-center gap-1.5 shadow-xs transition active:scale-95"
               >
                 <Download className="w-4 h-4" />
-                <span>تحميل الملف للجهاز</span>
+                <span>تحميل الملف</span>
               </a>
               <button
                 type="button"
