@@ -11,10 +11,10 @@ interface NavbarProps {
 export const Navbar: React.FC<NavbarProps> = ({ currentTab, onSelectTab }) => {
   const tabs = [
     { id: 'home' as MainTab, label: 'الرئيسية', icon: Home },
-    { id: 'calendar_schedule' as MainTab, label: 'التقويم والجدول', icon: Calendar },
+    { id: 'calendar_schedule' as MainTab, label: 'الجدول', icon: Calendar },
+    { id: 'books' as MainTab, label: 'المحاضرات', icon: BookOpen },
     { id: 'grades' as MainTab, label: 'الدرجات', icon: Award },
     { id: 'library' as MainTab, label: 'المكتبة', icon: Folder },
-    { id: 'books' as MainTab, label: 'المحاضرات', icon: BookOpen },
   ];
 
   return (
