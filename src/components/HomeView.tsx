@@ -23,7 +23,6 @@ interface HomeViewProps {
   onTriggerTestAlarm?: (reminder: HomeworkReminder) => void;
   onAddVoiceNote?: (text: string, subjectName?: string) => void;
   onDeleteVoiceNote?: (id: string) => void;
-  onNavigateToCalendar?: () => void;
 }
 
 const DAY_NAMES = ['الأحد', 'الإثنين', 'الثلاثاء', 'الأربعاء', 'الخميس', 'الجمعة', 'السبت'];
@@ -85,17 +84,9 @@ export const HomeView: React.FC<HomeViewProps> = ({
   onTriggerTestAlarm,
   onAddVoiceNote,
   onDeleteVoiceNote,
-  onNavigateToCalendar,
 }) => {
   const todayIndex = new Date().getDay() as DayOfWeek;
   const todayName = DAY_NAMES[todayIndex];
-
-  const nowObj = new Date();
-  const todayDateStr = `${nowObj.getFullYear()}-${String(nowObj.getMonth() + 1).padStart(2, '0')}-${String(nowObj.getDate()).padStart(2, '0')}`;
-  const todayCalendarNotes = (state.calendarNotes || []).filter(
-    (n) => n.date === todayDateStr && n.text?.trim()
-  );
-  const todayNotesCount = todayCalendarNotes.length;
 
   // Editing profile (Name & Stage) modal state
   const [isProfileModalOpen, setIsProfileModalOpen] = useState(false);
@@ -317,47 +308,45 @@ export const HomeView: React.FC<HomeViewProps> = ({
   );
 
   return (
-    <div className="space-y-4 pb-28 pt-2 px-4 max-w-lg mx-auto animate-classic" dir="rtl">
+    <div className="space-y-3.5 pb-24 pt-1 px-4 max-w-lg mx-auto animate-classic" dir="rtl">
       
-      {/* 1. Classic Academic Welcome Card: اسم المستخدم واليوم */}
-      <div className="rounded-[28px] p-6 bg-gradient-to-br from-slate-900 via-indigo-950/80 to-slate-900 text-white shadow-xl border border-cyan-500/25 relative overflow-hidden transition-colors duration-300">
-        {/* Subtle ambient highlights */}
-        <div className="absolute top-0 right-0 w-48 h-48 bg-cyan-500/15 rounded-full blur-3xl pointer-events-none" />
-        <div className="absolute bottom-0 left-0 w-40 h-40 bg-indigo-500/20 rounded-full blur-2xl pointer-events-none" />
-        <div className="absolute top-0 inset-x-0 h-1 bg-gradient-to-r from-cyan-500 via-teal-400 to-indigo-600" />
-
-        <div className="relative z-10 space-y-3">
+      {/* 1. Classic Academic Welcome Card */}
+      <div className="rounded-2xl p-4 sm:p-5 bg-gradient-to-br from-slate-900 via-indigo-950/80 to-slate-900 text-white border border-cyan-500/20 relative overflow-hidden transition-colors duration-300">
+        <div className="relative z-10 space-y-2">
           <div className="flex items-center justify-between gap-2">
-            <span className="text-xs font-bold px-3 py-1 rounded-full bg-cyan-950/80 border border-cyan-500/30 text-cyan-300 inline-flex items-center gap-1.5 shadow-2xs">
+            <span className="text-xs font-semibold text-cyan-300 inline-flex items-center gap-1.5">
               <Calendar className="w-3.5 h-3.5 text-cyan-400" />
-              <span>{todayName} • {formattedDate}</span>
+              <span>{todayName} · {formattedDate}</span>
             </span>
 
-            <span className="text-[11px] font-bold px-2.5 py-1 rounded-full bg-white/10 text-slate-200 border border-white/15 shadow-2xs">
-              {todaySubjects.length} محاضرات اليوم
+            <span className="text-[11px] px-2 py-0.5 rounded-md bg-white/10 text-slate-200">
+              {todaySubjects.length} محاضرات
             </span>
           </div>
 
-          {/* Student Greeting with Fast Edit Profile Modal */}
-          <div className="flex items-center flex-wrap gap-2 pt-1">
-            <h1 className="text-2xl sm:text-3xl font-black tracking-tight text-white">
-              مرحباً، {state.userName || 'زميلنا التقني'} 🥼
-            </h1>
-            {state.userClass && (
-              <button
-                type="button"
-                onClick={() => {
-                  setEditProfileName(state.userName);
-                  setEditProfileStage(state.userClass);
-                  setIsProfileModalOpen(true);
-                }}
-                className="text-[11px] font-bold px-2.5 py-0.5 rounded-full bg-cyan-500/20 hover:bg-cyan-500/30 text-cyan-300 border border-cyan-400/40 transition active:scale-95 flex items-center gap-1 cursor-pointer"
-                title="تغيير المرحلة الجامعية"
-              >
-                <span>{state.userClass}</span>
-                <Edit2 className="w-3 h-3 opacity-70" />
-              </button>
-            )}
+          {/* Student Greeting */}
+          <div className="flex items-center justify-between flex-wrap gap-2 pt-0.5">
+            <div className="flex items-center gap-2">
+              <h1 className="text-xl sm:text-2xl font-bold tracking-tight text-white">
+                مرحباً، {state.userName || 'طالب الأشعة'}
+              </h1>
+              {state.userClass && (
+                <button
+                  type="button"
+                  onClick={() => {
+                    setEditProfileName(state.userName);
+                    setEditProfileStage(state.userClass);
+                    setIsProfileModalOpen(true);
+                  }}
+                  className="text-[11px] font-semibold px-2 py-0.5 rounded-md bg-cyan-500/20 hover:bg-cyan-500/30 text-cyan-300 border border-cyan-400/30 transition active:scale-95 flex items-center gap-1 cursor-pointer"
+                  title="تغيير المرحلة"
+                >
+                  <span>{state.userClass}</span>
+                  <Edit2 className="w-3 h-3 opacity-70" />
+                </button>
+              )}
+            </div>
+
             <button
               type="button"
               onClick={() => {
@@ -365,99 +354,80 @@ export const HomeView: React.FC<HomeViewProps> = ({
                 setEditProfileStage(state.userClass);
                 setIsProfileModalOpen(true);
               }}
-              className="p-1.5 rounded-xl text-cyan-300 hover:text-white hover:bg-white/10 transition-all duration-200 active:scale-95 cursor-pointer"
-              title="تعديل بيانات الطالب والمرحلة"
+              className="p-1.5 rounded-lg text-cyan-300 hover:text-white hover:bg-white/10 transition active:scale-95 cursor-pointer"
+              title="تعديل بيانات الطالب"
             >
-              <Edit2 className="w-4 h-4" />
+              <Edit2 className="w-3.5 h-3.5" />
             </button>
           </div>
-
-          <p className="text-xs text-cyan-200/80 font-semibold leading-relaxed">
-            المنصة الأكاديمية لطلبة تقنيات الأشعة والتصوير الطبي • جدول محاضرات وتدريب ({todayName})
-          </p>
         </div>
       </div>
 
-      {/* 2. Fast Actions Row (تنبيه واجب جديد ⏰ + إضافة محاضرة لليوم ➕) */}
-      <div className="grid grid-cols-2 gap-2.5">
-        {/* زر التنبيه */}
+      {/* 2. Fast Actions Row */}
+      <div className="grid grid-cols-2 gap-2">
         <button
           onClick={() => setIsAddReminderModalOpen(true)}
-          className="p-3.5 rounded-2xl bg-gradient-to-r from-amber-600 to-orange-600 hover:from-amber-500 hover:to-orange-500 text-white font-bold text-xs shadow-md shadow-amber-600/20 flex items-center justify-between transition-all duration-200 active:scale-95 border border-amber-400/30 group cursor-pointer"
+          className="p-3 rounded-xl bg-gradient-to-r from-amber-600 to-orange-600 hover:from-amber-500 hover:to-orange-500 text-white font-bold text-xs shadow-xs flex items-center justify-between transition active:scale-95 border border-amber-400/20 cursor-pointer"
         >
-          <div className="flex items-center gap-2.5">
-            <div className="w-8 h-8 rounded-xl bg-white/20 flex items-center justify-center text-white group-hover:scale-110 transition-transform shrink-0">
-              <Bell className="w-4 h-4 animate-pulse" />
-            </div>
-            <div className="text-right">
-              <span className="block leading-tight font-black">تنبيه مهمة / سريري</span>
-              <span className="text-[10px] font-semibold text-amber-100">مع رنين تنبيه 🔔</span>
-            </div>
+          <div className="flex items-center gap-2">
+            <Bell className="w-4 h-4 shrink-0" />
+            <span className="font-bold">تنبيه مهمة</span>
           </div>
           {pendingReminders.length > 0 && (
-            <span className="w-5 h-5 rounded-full bg-white text-amber-700 text-[10px] tabular-nums font-black flex items-center justify-center shadow-2xs shrink-0">
+            <span className="w-4 h-4 rounded-full bg-white text-amber-700 text-[10px] font-bold flex items-center justify-center shrink-0">
               {pendingReminders.length}
             </span>
           )}
         </button>
 
-        {/* زر إضافة محاضرة اليوم */}
         <button
           onClick={() => setIsAddModalOpen(true)}
-          className="p-3.5 rounded-2xl bg-gradient-to-r from-cyan-600 to-teal-600 hover:from-cyan-500 hover:to-teal-500 text-white font-bold text-xs shadow-md shadow-cyan-600/20 flex items-center justify-between transition-all duration-200 active:scale-95 border border-cyan-400/30 group cursor-pointer"
+          className="p-3 rounded-xl bg-gradient-to-r from-cyan-600 to-teal-600 hover:from-cyan-500 hover:to-teal-500 text-white font-bold text-xs shadow-xs flex items-center justify-between transition active:scale-95 border border-cyan-400/20 cursor-pointer"
         >
-          <div className="flex items-center gap-2.5">
-            <div className="w-8 h-8 rounded-xl bg-white/20 flex items-center justify-center text-white group-hover:scale-110 transition-transform shrink-0">
-              <Plus className="w-4 h-4" />
-            </div>
-            <div className="text-right">
-              <span className="block leading-tight font-black">إضافة محاضرة لليوم</span>
-              <span className="text-[10px] font-semibold text-cyan-100">لجدول ({todayName})</span>
-            </div>
+          <div className="flex items-center gap-2">
+            <Plus className="w-4 h-4 shrink-0" />
+            <span className="font-bold">إضافة محاضرة</span>
           </div>
-          <ArrowUpRight className="w-4 h-4 text-cyan-100 opacity-80 shrink-0" />
+          <ArrowUpRight className="w-3.5 h-3.5 text-cyan-100 opacity-80 shrink-0" />
         </button>
       </div>
 
-      {/* 3. VOICE-TO-TEXT SMART NOTES SECTION (الملاحظات الصوتية: تحدث والمشروع يكتب) */}
-      <div className="classic-card rounded-3xl p-4 space-y-3">
+      {/* 3. Voice Notes Section */}
+      <div className="classic-card rounded-2xl p-3.5 space-y-2.5">
         <div className="flex items-center justify-between gap-2">
-          <div className="flex items-center gap-2.5">
-            <div className={`w-9 h-9 rounded-2xl flex items-center justify-center transition ${
+          <div className="flex items-center gap-2">
+            <div className={`w-7 h-7 rounded-lg flex items-center justify-center transition ${
               isVoiceListening
-                ? 'bg-rose-600 text-white animate-pulse shadow-md shadow-rose-600/30'
+                ? 'bg-rose-600 text-white animate-pulse'
                 : 'bg-indigo-500/10 text-indigo-600 dark:text-indigo-400'
             }`}>
-              {isVoiceListening ? <MicOff className="w-4 h-4" /> : <Mic className="w-4 h-4" />}
+              {isVoiceListening ? <MicOff className="w-3.5 h-3.5" /> : <Mic className="w-3.5 h-3.5" />}
             </div>
             <div>
-              <h2 className="text-sm font-black text-slate-900 dark:text-white">
-                الملاحظات الصوتية الذكية 🎙️
+              <h2 className="text-xs font-bold text-slate-900 dark:text-white">
+                ملاحظة صوتية
               </h2>
-              <p className="text-[11px] text-slate-500 dark:text-slate-400">
-                اضغط الميكروفون وتحدث بالعربية وسيكتب المشروع كلامك فوراً
-              </p>
             </div>
           </div>
 
           <button
             type="button"
             onClick={toggleLiveVoiceNote}
-            className={`px-3.5 py-2 rounded-2xl text-xs font-bold flex items-center gap-1.5 transition active:scale-95 cursor-pointer shrink-0 ${
+            className={`px-3 py-1.5 rounded-xl text-xs font-bold flex items-center gap-1.5 transition active:scale-95 cursor-pointer shrink-0 ${
               isVoiceListening
-                ? 'bg-rose-600 hover:bg-rose-500 text-white shadow-md shadow-rose-600/25 animate-pulse'
-                : 'bg-indigo-600 hover:bg-indigo-500 text-white shadow-md shadow-indigo-600/20'
+                ? 'bg-rose-600 hover:bg-rose-500 text-white'
+                : 'bg-indigo-600 hover:bg-indigo-500 text-white'
             }`}
           >
             {isVoiceListening ? (
               <>
-                <MicOff className="w-3.5 h-3.5" />
-                <span>إيقاف التسجيل</span>
+                <MicOff className="w-3 h-3" />
+                <span>إيقاف</span>
               </>
             ) : (
               <>
-                <Mic className="w-3.5 h-3.5" />
-                <span>تحدث الآن</span>
+                <Mic className="w-3 h-3" />
+                <span>تسجيل</span>
               </>
             )}
           </button>
@@ -482,12 +452,12 @@ export const HomeView: React.FC<HomeViewProps> = ({
               }}
               placeholder={
                 isVoiceListening
-                  ? '🎙️ تكلم الآن... سيظل الميكروفون مفتوحاً حتى تضغط "إيقاف التسجيل"'
-                  : 'اضغط "تحدث الآن" وتكلم ليتم تحويل صوتك إلى كتابة، أو اكتب ملاحظتك هنا...'
+                  ? 'جاري الاستماع... تحدث الآن'
+                  : 'اكتب ملاحظتك هنا أو اضغط تسجيل...'
               }
-              className={`w-full rounded-2xl px-3.5 py-2.5 text-xs text-slate-900 dark:text-white placeholder:text-slate-400 focus:outline-none transition resize-none leading-relaxed ${
+              className={`w-full rounded-xl px-3 py-2 text-xs text-slate-900 dark:text-white placeholder:text-slate-400 focus:outline-none transition resize-none leading-relaxed ${
                 isVoiceListening
-                  ? 'bg-rose-50/50 dark:bg-rose-950/20 border-2 border-rose-500/60'
+                  ? 'bg-rose-50/50 dark:bg-rose-950/20 border border-rose-500'
                   : 'bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 focus:border-indigo-500'
               }`}
             />
@@ -503,101 +473,81 @@ export const HomeView: React.FC<HomeViewProps> = ({
                   baseTextRef.current = '';
                   sessionTextRef.current = '';
                 }}
-                className="px-3 py-1.5 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 text-xs font-bold"
+                className="px-2.5 py-1 rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 text-xs font-semibold"
               >
-                مسح النص
+                مسح
               </button>
               <button
                 type="submit"
-                className="px-4 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold shadow-xs transition active:scale-95"
+                className="px-3.5 py-1 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-semibold shadow-xs transition active:scale-95"
               >
-                حفظ الملاحظة المكتوبة
+                حفظ
               </button>
             </div>
           )}
         </form>
 
-        {/* Smart Calendar Routing: تحفظ الملاحظات بالتقويم لتبقى الرئيسية مرتبة */}
-        <div className="pt-2 border-t border-slate-100 dark:border-slate-800/80 space-y-2">
-          <div className="p-3.5 rounded-2xl bg-gradient-to-br from-cyan-50/80 to-indigo-50/50 dark:from-slate-900/90 dark:to-cyan-950/30 border border-cyan-500/25 flex items-center justify-between gap-3">
-            <div className="flex items-center gap-2.5 min-w-0">
-              <div className="w-8 h-8 rounded-xl bg-cyan-500/15 text-cyan-600 dark:text-cyan-400 flex items-center justify-center shrink-0">
-                <Calendar className="w-4 h-4" />
-              </div>
-              <div className="min-w-0">
-                <p className="text-xs font-bold text-slate-900 dark:text-white truncate">
-                  تُحفظ الملاحظات الصوتية تلقائياً في تقويم اليوم ({todayName})
-                </p>
-                <p className="text-[10px] text-slate-500 dark:text-slate-400 font-medium">
-                  {todayNotesCount > 0
-                    ? `تم حفظ وترتيب (${todayNotesCount}) ملاحظة في تقويم اليوم`
-                    : 'تبقى الرئيسية مرتبة وتنتقل الملاحظات لتقويم اليوم وتستوعب ملاحظات متعددة'}
-                </p>
-              </div>
-            </div>
-
-            {onNavigateToCalendar && (
-              <button
-                type="button"
-                onClick={onNavigateToCalendar}
-                className="px-3 py-1.5 rounded-xl bg-white dark:bg-slate-800 text-cyan-700 dark:text-cyan-300 hover:bg-cyan-50 dark:hover:bg-slate-700/80 text-[11px] font-black border border-cyan-500/30 shadow-xs transition active:scale-95 shrink-0 flex items-center gap-1 cursor-pointer"
+        {/* Saved Voice-Transcribed Notes List */}
+        {(state.voiceNotes || []).length > 0 && (
+          <div className="space-y-1.5 pt-2 border-t border-slate-100 dark:border-slate-800/80">
+            {(state.voiceNotes || []).map((vn) => (
+              <div
+                key={vn.id}
+                className="p-2.5 rounded-xl bg-slate-50 dark:bg-slate-950/70 border border-slate-200/80 dark:border-slate-800 flex items-start justify-between gap-2"
               >
-                <span>فتح التقويم 📅</span>
-                <ArrowUpRight className="w-3 h-3" />
-              </button>
-            )}
-          </div>
+                <div className="min-w-0 flex-1">
+                  <p className="text-xs text-slate-800 dark:text-slate-100 leading-relaxed whitespace-pre-wrap">
+                    {vn.text}
+                  </p>
+                  <span className="text-[10px] text-slate-400 mt-0.5 block">
+                    {vn.createdAt}
+                  </span>
+                </div>
 
-          {/* Quick reassurance preview for today's latest note without cluttering the screen */}
-          {todayNotesCount > 0 && todayCalendarNotes[0] && (
-            <div className="p-2.5 rounded-xl bg-slate-50 dark:bg-slate-950/70 border border-slate-200/80 dark:border-slate-800 flex items-center justify-between gap-2 text-xs">
-              <div className="flex items-center gap-2 min-w-0">
-                <span className="text-[10px] px-2 py-0.5 rounded-lg bg-cyan-500/15 text-cyan-700 dark:text-cyan-300 font-bold shrink-0">
-                  آخر ملاحظة محفوظة
-                </span>
-                <p className="text-slate-700 dark:text-slate-300 truncate font-medium text-[11px]">
-                  {todayCalendarNotes[0].text}
-                </p>
+                <div className="flex items-center gap-1 shrink-0">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      navigator.clipboard?.writeText(vn.text);
+                    }}
+                    className="p-1 rounded-lg text-slate-400 hover:text-indigo-600 dark:hover:text-indigo-400 transition"
+                    title="نسخ"
+                  >
+                    <Copy className="w-3.5 h-3.5" />
+                  </button>
+                  {onDeleteVoiceNote && (
+                    <button
+                      type="button"
+                      onClick={() => onDeleteVoiceNote(vn.id)}
+                      className="p-1 rounded-lg text-slate-400 hover:text-rose-600 transition"
+                      title="حذف"
+                    >
+                      <Trash2 className="w-3.5 h-3.5" />
+                    </button>
+                  )}
+                </div>
               </div>
-              {onNavigateToCalendar && (
-                <button
-                  type="button"
-                  onClick={onNavigateToCalendar}
-                  className="text-[11px] text-cyan-600 dark:text-cyan-400 font-bold hover:underline shrink-0 flex items-center gap-0.5 cursor-pointer"
-                >
-                  <span>عرض الكل ({todayNotesCount})</span>
-                  <ArrowUpRight className="w-3 h-3" />
-                </button>
-              )}
-            </div>
-          )}
-        </div>
+            ))}
+          </div>
+        )}
       </div>
 
-      {/* 4. HOMEWORK REMINDERS SECTION (قسم تنبيهات الواجبات والمذاكرة) */}
-      <div className="space-y-2 pt-1">
+      {/* 4. HOMEWORK REMINDERS SECTION */}
+      <div className="space-y-2 pt-0.5">
         <div className="flex items-center justify-between px-1">
-          <h2 className="text-sm font-black text-slate-900 dark:text-white flex items-center gap-2">
-            <div className="w-6 h-6 rounded-lg bg-amber-500/15 text-amber-600 dark:text-amber-400 flex items-center justify-center">
-              <Bell className="w-3.5 h-3.5" />
-            </div>
-            <span>تنبيهات الواجبات والمهام ⏰</span>
+          <h2 className="text-xs font-bold text-slate-900 dark:text-white flex items-center gap-1.5">
+            <Bell className="w-3.5 h-3.5 text-amber-500" />
+            <span>تنبيهات المهام</span>
           </h2>
-          <span className="text-[11px] font-bold text-slate-600 dark:text-slate-400">
-            {pendingReminders.length} تنبيه قيد الانتظار
+          <span className="text-[11px] text-slate-500">
+            {pendingReminders.length} معلّقة
           </span>
         </div>
 
         {reminders.length === 0 ? (
-          <div className="classic-card rounded-2xl p-4 text-center">
-            <div className="w-10 h-10 rounded-2xl bg-amber-500/15 text-amber-600 dark:text-amber-400 mx-auto flex items-center justify-center mb-2">
-              <Bell className="w-5 h-5" />
-            </div>
-            <h4 className="text-xs font-black text-slate-900 dark:text-slate-100">
-              لا توجد تنبيهات واجبات حالياً
-            </h4>
-            <p className="text-[11px] text-slate-600 dark:text-slate-400 mt-1 max-w-xs mx-auto leading-relaxed">
-              اضغط على "تنبيه واجب جديد ⏰" أعلاه لتسجيل واجب، وسيصلك تنبيه مع صوت الرنين عند حلول الوقت المحدد.
+          <div className="classic-card rounded-xl p-3 text-center">
+            <p className="text-xs text-slate-500 dark:text-slate-400">
+              لا توجد تنبيهات مهام حالياً
             </p>
           </div>
         ) : (
@@ -702,41 +652,29 @@ export const HomeView: React.FC<HomeViewProps> = ({
       </div>
 
       {/* 4. Today's Classes Header with Add Action */}
-      <div className="flex items-center justify-between pt-3 px-1">
+      <div className="flex items-center justify-between pt-2 px-1">
         <div>
-          <h2 className="text-sm font-black text-slate-900 dark:text-white flex items-center gap-2">
-            <Clock className="w-4 h-4 text-cyan-600 dark:text-cyan-400" />
-            <span>محاضرات وتدريب اليوم ({todayName})</span>
+          <h2 className="text-xs font-bold text-slate-900 dark:text-white flex items-center gap-1.5">
+            <Clock className="w-3.5 h-3.5 text-cyan-600 dark:text-cyan-400" />
+            <span>محاضرات اليوم ({todayName})</span>
           </h2>
-          <p className="text-[11px] text-slate-600 dark:text-slate-400 font-medium flex items-center gap-1.5">
-            <span>المواد والمختبرات المقررة عليك اليوم</span>
-            <span className="text-[10px] px-2 py-0.5 rounded-md bg-cyan-500/15 text-cyan-700 dark:text-cyan-300 font-bold border border-cyan-500/25">
-              {state.userClass || 'المرحلة الأولى'}
-            </span>
-          </p>
         </div>
 
         <button
           onClick={() => setIsAddModalOpen(true)}
-          className="px-3.5 py-1.5 rounded-2xl bg-cyan-600 hover:bg-cyan-500 text-white text-xs font-bold shadow-md shadow-cyan-600/20 flex items-center gap-1.5 transition-all duration-200 active:scale-95 cursor-pointer"
+          className="px-3 py-1 rounded-xl bg-cyan-600 hover:bg-cyan-500 text-white text-xs font-semibold shadow-xs flex items-center gap-1 transition active:scale-95 cursor-pointer"
         >
           <Plus className="w-3.5 h-3.5" />
-          <span>إضافة محاضرة</span>
+          <span>إضافة</span>
         </button>
       </div>
 
-      {/* 5. Today's Subjects List (محاضرات اليوم فقط) */}
-      <div className="space-y-2.5">
+      {/* 5. Today's Subjects List */}
+      <div className="space-y-2">
         {todaySubjects.length === 0 ? (
-          <div className="classic-card rounded-3xl p-7 text-center">
-            <div className="w-12 h-12 rounded-2xl bg-cyan-500/10 text-cyan-600 dark:text-cyan-400 mx-auto flex items-center justify-center mb-3">
-              <Compass className="w-6 h-6" />
-            </div>
-            <h3 className="text-sm font-black text-slate-900 dark:text-slate-100">
-              لا توجد محاضرات مسجلة لهذا اليوم ({todayName})
-            </h3>
-            <p className="text-xs text-slate-600 dark:text-slate-400 mt-1 max-w-xs mx-auto leading-relaxed">
-              يوم مخصص للاستذكار أو التدريب الحر. اضغط على "+ إضافة محاضرة" لإدراج أي درس أو معمل.
+          <div className="classic-card rounded-xl p-4 text-center">
+            <p className="text-xs text-slate-500 dark:text-slate-400">
+              لا توجد محاضرات مسجلة اليوم ({todayName})
             </p>
           </div>
         ) : (
@@ -997,21 +935,6 @@ export const HomeView: React.FC<HomeViewProps> = ({
                     );
                   })}
                 </div>
-
-                {/* Explicit notification banner for stage selection */}
-                <div className="mt-2.5 p-3 rounded-2xl bg-amber-500/10 border border-amber-500/30 text-right flex items-start gap-2.5">
-                  <div className="w-6 h-6 rounded-lg bg-amber-500/20 text-amber-400 flex items-center justify-center shrink-0 mt-0.5">
-                    <Bell className="w-3.5 h-3.5 animate-bounce" />
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <span className="text-[11px] font-black text-amber-300 block">
-                      🔔 تنبيه تخصيص المرحلة:
-                    </span>
-                    <p className="text-[10px] text-slate-300 mt-0.5 leading-relaxed font-medium">
-                      عند اختيارك للمرحلة، سوف تظهر لك محاضراتك ومناهجك والكتب والملازم الخاصة بهذه المرحلة فقط.
-                    </p>
-                  </div>
-                </div>
               </div>
 
               <div className="flex gap-2.5 pt-2">
@@ -1024,9 +947,9 @@ export const HomeView: React.FC<HomeViewProps> = ({
                 </button>
                 <button
                   type="submit"
-                  className="w-2/3 py-2.5 rounded-2xl bg-gradient-to-r from-cyan-600 via-teal-600 to-indigo-600 hover:from-cyan-500 hover:to-indigo-500 text-white text-xs font-black shadow-lg shadow-cyan-600/30 transition active:scale-95 cursor-pointer"
+                  className="w-2/3 py-2.5 rounded-2xl bg-gradient-to-r from-cyan-600 to-indigo-600 hover:from-cyan-500 hover:to-indigo-500 text-white text-xs font-bold shadow-xs transition active:scale-95 cursor-pointer"
                 >
-                  حفظ البيانات الجامعية
+                  حفظ
                 </button>
               </div>
 
@@ -1035,7 +958,7 @@ export const HomeView: React.FC<HomeViewProps> = ({
                   <button
                     type="button"
                     onClick={() => {
-                      if (window.confirm('هل أنت متأكد من تفريغ كافة البيانات (المحاضرات، المجلدات، الدرجات، التنبيهات) والبدء بسجل فارغ تماماً؟')) {
+                      if (window.confirm('هل أنت متأكد من تفريغ كافة البيانات والبدء بسجل فارغ؟')) {
                         onResetAllData();
                         setIsProfileModalOpen(false);
                       }
@@ -1043,7 +966,7 @@ export const HomeView: React.FC<HomeViewProps> = ({
                     className="w-full py-2 px-3 rounded-xl bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 text-[11px] font-bold border border-rose-500/20 transition active:scale-95 flex items-center justify-center gap-1.5 cursor-pointer"
                   >
                     <Trash2 className="w-3.5 h-3.5" />
-                    <span>تفريغ ومسح السجل للبدء من جديد (سجل فارغ)</span>
+                    <span>إعادة ضبط السجل</span>
                   </button>
                 </div>
               )}
