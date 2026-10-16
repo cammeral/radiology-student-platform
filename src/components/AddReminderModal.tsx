@@ -297,7 +297,7 @@ export const AddReminderModal: React.FC<AddReminderModalProps> = ({
                     صوت رنين التنبيه
                   </p>
                   <p className="text-[10px] text-slate-600 dark:text-slate-400">
-                    تشغيل نغمة وجرس تنبيه عند حلول الوقت
+                    نغمة التنبيه
                   </p>
                 </div>
               </div>
@@ -340,10 +340,10 @@ export const AddReminderModal: React.FC<AddReminderModalProps> = ({
             </button>
             <button
               type="submit"
-              className="w-2/3 py-3 rounded-2xl bg-gradient-to-r from-amber-600 to-orange-600 hover:from-amber-500 hover:to-orange-500 text-white font-black text-xs shadow-lg shadow-amber-600/25 transition active:scale-95 flex items-center justify-center gap-1.5"
+              className="w-2/3 py-3 rounded-2xl bg-gradient-to-r from-amber-600 to-orange-600 hover:from-amber-500 hover:to-orange-500 text-white font-bold text-xs shadow-xs transition active:scale-95 flex items-center justify-center gap-1.5 cursor-pointer"
             >
               <Bell className="w-4 h-4" />
-              <span>ضبط التنبيه الآن</span>
+              <span>ضبط التنبيه</span>
             </button>
           </div>
         </form>
