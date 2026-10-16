@@ -20,6 +20,7 @@ import {
   Eye,
   CheckCircle2,
   Loader2,
+  RefreshCw,
 } from 'lucide-react';
 import {
   LECTURES_DATA,
@@ -284,16 +285,11 @@ export const BooksView: React.FC<BooksViewProps> = ({
             {idx + 1}
           </div>
           <div className="min-w-0">
-            <div className="flex items-center gap-2 flex-wrap">
-              <h5 className="text-xs sm:text-sm font-bold text-slate-900 dark:text-slate-100 leading-snug">
-                {lecture.name}
-              </h5>
-              <span className="inline-flex items-center gap-0.5 px-2 py-0.5 rounded-md text-[10px] font-bold bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 border border-emerald-500/25">
-                <Check className="w-2.5 h-2.5" /> جاهزة للدراسة
-              </span>
-            </div>
+            <h5 className="text-xs sm:text-sm font-semibold text-slate-900 dark:text-slate-100 leading-snug">
+              {lecture.name}
+            </h5>
             <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">
-              {subject.name} • {grade.name}
+              {subject.name}
             </p>
           </div>
         </div>
@@ -370,7 +366,7 @@ export const BooksView: React.FC<BooksViewProps> = ({
                 <span>{grade.name}</span>
                 <span>•</span>
                 <span className="font-bold text-cyan-600 dark:text-cyan-400 bg-cyan-50 dark:bg-cyan-950/60 border border-cyan-200/70 dark:border-cyan-800/50 px-2 py-0.5 rounded-md">
-                  {lectures.length} محاضرات أكاديمية
+                  {lectures.length} محاضرات
                 </span>
               </div>
             </div>
@@ -384,15 +380,15 @@ export const BooksView: React.FC<BooksViewProps> = ({
                 e.stopPropagation();
                 toggleExpandSubject(expandKey, defaultExpanded);
               }}
-              className={`px-3.5 py-2 rounded-2xl text-xs font-bold flex items-center gap-1.5 transition-all cursor-pointer ${
+              className={`px-3 py-1.5 rounded-xl text-xs font-semibold flex items-center gap-1.5 transition-all cursor-pointer ${
                 isExpanded
-                  ? 'bg-cyan-600 text-white shadow-sm shadow-cyan-600/30'
-                  : 'bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-cyan-50 dark:hover:bg-cyan-950/40 hover:text-cyan-600'
+                  ? 'bg-cyan-600 text-white shadow-xs'
+                  : 'bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-cyan-50 dark:hover:bg-cyan-950/40'
               }`}
             >
-              <span>{isExpanded ? 'إغلاق المحاضرات' : `عرض المحاضرات (${lectures.length})`}</span>
+              <span>{isExpanded ? 'إغلاق' : `${lectures.length} محاضرات`}</span>
               <ChevronDown
-                className={`w-4 h-4 transition-transform duration-200 ${
+                className={`w-3.5 h-3.5 transition-transform duration-200 ${
                   isExpanded ? 'rotate-180' : ''
                 }`}
               />
@@ -402,15 +398,7 @@ export const BooksView: React.FC<BooksViewProps> = ({
 
         {/* Expanded Lectures List */}
         {hasLectures && isExpanded && (
-          <div className="border-t border-slate-100 dark:border-slate-800/80 bg-slate-50/70 dark:bg-slate-950/60 p-3 sm:p-4 space-y-2.5">
-            <div className="flex items-center justify-between px-1 mb-1">
-              <span className="text-[11px] font-bold text-slate-500 dark:text-slate-400">
-                قائمة المحاضرات المقررة ({lectures.length} محاضرات):
-              </span>
-              <span className="text-[10px] text-cyan-600 dark:text-cyan-400 font-semibold">
-                اضغط قراءة أو تحميل للمحاضرة المطلوبة
-              </span>
-            </div>
+          <div className="border-t border-slate-100 dark:border-slate-800/80 bg-slate-50/70 dark:bg-slate-950/60 p-2.5 sm:p-3 space-y-2">
             {lectures.map((lecture, idx) => renderLectureRow(grade, subject, lecture, idx))}
           </div>
         )}
@@ -425,94 +413,50 @@ export const BooksView: React.FC<BooksViewProps> = ({
         <div className="flex items-center justify-between gap-3">
           <div className="flex items-center gap-3">
             <div className="w-12 h-12 rounded-2xl bg-gradient-to-tr from-cyan-600 via-teal-600 to-indigo-600 flex items-center justify-center text-white shadow-md shadow-cyan-600/20 shrink-0">
-              <BookOpen className="w-6 h-6" />
+              <BookOpen className="w-5 h-5" />
             </div>
             <div>
-              <h2 className="text-lg font-black text-slate-900 dark:text-white">
-                محاضرات تقنيات الأشعة والتصوير الطبي
+              <h2 className="text-base font-bold text-slate-900 dark:text-white">
+                المحاضرات
               </h2>
               <p className="text-xs text-slate-500 dark:text-slate-400">
-                المحاضرات الجامعية المعتمدة لجميع مواد قسم الأشعة (قراءة مباشرة وتحميل PDF)
+                {activeGradeObj?.grade.name} · {activeGradeObj?.grade.subjects.length} مواد
               </p>
             </div>
           </div>
+
+          {onUpdateUserClass && (
+            <button
+              type="button"
+              onClick={() => setIsChangeStageModalOpen(true)}
+              className="px-2.5 py-1 rounded-lg bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 text-xs font-semibold transition flex items-center gap-1 shrink-0 cursor-pointer active:scale-95"
+              title="تعديل المرحلة"
+            >
+              <Layers className="w-3.5 h-3.5 text-cyan-600 dark:text-cyan-400" />
+              <span>المرحلة</span>
+            </button>
+          )}
         </div>
 
         {/* Search Input for Lectures */}
         <div className="relative">
-          <Search className="w-4 h-4 text-slate-400 absolute right-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
+          <Search className="w-4 h-4 text-slate-400 absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none" />
           <input
             type="text"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            placeholder="ابحث عن مادة أو عنوان محاضرة (مثال: رنين، مفراس، تشريح، T1, T2, فيزياء الإشعاع)..."
-            className="w-full pr-10 pl-9 py-2.5 rounded-2xl text-xs sm:text-sm bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 text-slate-900 dark:text-white placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-cyan-500/40 transition font-medium"
+            placeholder="ابحث عن مادة أو محاضرة..."
+            className="w-full pr-9 pl-8 py-2 rounded-xl text-xs bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 text-slate-900 dark:text-white placeholder:text-slate-400 focus:outline-none focus:border-cyan-500 transition font-medium"
           />
           {searchQuery && (
             <button
               type="button"
               onClick={() => setSearchQuery('')}
-              className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200"
+              className="absolute left-2.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200"
             >
-              <X className="w-4 h-4" />
+              <X className="w-3.5 h-3.5" />
             </button>
           )}
-        </div>
-
-        {/* Academic Stage Lock Banner */}
-        <div className="pt-2 border-t border-slate-100 dark:border-slate-800/80">
-          <div className="p-3.5 rounded-2xl bg-gradient-to-r from-slate-900 via-indigo-950/90 to-slate-900 border border-cyan-500/35 flex items-center justify-between gap-3 text-white shadow-sm">
-            <div className="flex items-center gap-3 min-w-0">
-              <div className="w-10 h-10 rounded-xl bg-cyan-500/20 text-cyan-300 border border-cyan-400/30 flex items-center justify-center shrink-0">
-                <GraduationCap className="w-5 h-5" />
-              </div>
-              <div className="min-w-0">
-                <div className="flex items-center gap-2">
-                  <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded-full bg-cyan-500/20 text-cyan-300 border border-cyan-500/30">
-                    المرحلة الدراسية
-                  </span>
-                  <span className="text-xs font-black text-white truncate">
-                    {activeGradeObj?.grade.name}
-                  </span>
-                </div>
-                <p className="text-[11px] text-cyan-200/80 mt-0.5">
-                  معروض حصراً: {activeGradeObj?.grade.subjects.length} مواد و {totalGradeLecturesCount} محاضرة لهذه المرحلة
-                </p>
-              </div>
-            </div>
-
-            {onUpdateUserClass && (
-              <button
-                type="button"
-                onClick={() => setIsChangeStageModalOpen(true)}
-                className="px-3 py-1.5 rounded-xl bg-white/10 hover:bg-white/20 text-cyan-300 hover:text-white border border-cyan-400/30 text-[11px] font-bold transition flex items-center gap-1.5 shrink-0 cursor-pointer active:scale-95"
-                title="تعديل مرحلتك الدراسية"
-              >
-                <Layers className="w-3.5 h-3.5" />
-                <span>تعديل المرحلة</span>
-              </button>
-            )}
-          </div>
-        </div>
-      </div>
-
-      {/* Explicit Information Banner */}
-      <div className="rounded-2xl p-4 bg-gradient-to-r from-cyan-500/10 via-teal-500/15 to-indigo-500/10 border border-cyan-500/30 dark:border-cyan-400/25 flex items-start gap-3 shadow-xs">
-        <div className="w-8 h-8 rounded-xl bg-cyan-500/20 text-cyan-700 dark:text-cyan-300 flex items-center justify-center shrink-0 mt-0.5">
-          <BookMarked className="w-4 h-4" />
-        </div>
-        <div className="flex-1 min-w-0">
-          <div className="flex items-center gap-2 flex-wrap">
-            <h4 className="text-xs font-black text-slate-900 dark:text-white">
-              محاضرات {activeGradeObj?.grade.name || 'المرحلة الدراسية'}:
-            </h4>
-            <span className="text-[10px] font-bold px-2.5 py-0.5 rounded-full bg-cyan-600 text-white">
-              {activeGradeObj?.grade.subjects.length} مواد تخصصية
-            </span>
-          </div>
-          <p className="text-[11px] text-slate-600 dark:text-slate-300 mt-1 leading-relaxed">
-            كل مادة مقسمة إلى سلسلة محاضرات مرقمة ومرتبة تسلسلياً بحسب الخطة الأكاديمية ومفردات المنهج المعتمد.
-          </p>
         </div>
       </div>
 
@@ -595,35 +539,29 @@ export const BooksView: React.FC<BooksViewProps> = ({
 
               {activeLectureModal.url ? (
                 <div className="space-y-3">
-                  {/* Notice info banner explaining preview vs download */}
-                  <div className="flex items-center justify-between px-3 py-2 rounded-xl bg-cyan-500/10 border border-cyan-500/20 text-[11px] text-cyan-800 dark:text-cyan-200">
-                    <div className="flex items-center gap-1.5">
-                      <BookOpen className="w-3.5 h-3.5 text-cyan-600 dark:text-cyan-400 shrink-0" />
-                      <span>معاينة وقراءة المحاضرة مباشرة دون تحميل تلقائي</span>
-                    </div>
+                  {/* Clean toolbar header */}
+                  <div className="flex items-center justify-between px-1 text-xs text-slate-500 dark:text-slate-400">
+                    <span className="font-semibold text-slate-700 dark:text-slate-300">معاينة المحاضرة</span>
                     <button
                       type="button"
                       onClick={() => {
                         setIsIframeLoading(true);
                         setIframeKey((k) => k + 1);
                       }}
-                      className="text-[10px] font-bold text-cyan-700 dark:text-cyan-300 hover:underline flex items-center gap-1 cursor-pointer"
+                      className="text-xs font-semibold text-cyan-600 dark:text-cyan-400 hover:underline flex items-center gap-1 cursor-pointer"
                       title="إعادة تحميل المعاينة"
                     >
-                      <Sparkles className="w-3 h-3" />
-                      <span>تحديث العرض</span>
+                      <RefreshCw className="w-3.5 h-3.5" />
+                      <span>تحديث</span>
                     </button>
                   </div>
 
                   <div className="w-full h-[66vh] rounded-2xl overflow-hidden border border-slate-200 dark:border-slate-800 bg-slate-100 dark:bg-slate-950 relative flex flex-col">
                     {isIframeLoading && (
                       <div className="absolute inset-0 flex flex-col items-center justify-center bg-slate-50/90 dark:bg-slate-950/90 z-10 transition-opacity">
-                        <Loader2 className="w-8 h-8 text-cyan-600 dark:text-cyan-400 animate-spin mb-2" />
-                        <span className="text-xs font-bold text-slate-800 dark:text-slate-200">
-                          جاري تجهيز وعرض المحاضرة...
-                        </span>
-                        <span className="text-[10px] text-slate-400 mt-0.5">
-                          تصفح سلس لجميع الصفحات بدقة عالية
+                        <Loader2 className="w-7 h-7 text-cyan-600 dark:text-cyan-400 animate-spin mb-1.5" />
+                        <span className="text-xs font-semibold text-slate-700 dark:text-slate-300">
+                          جاري تجهيز العرض...
                         </span>
                       </div>
                     )}
@@ -644,10 +582,10 @@ export const BooksView: React.FC<BooksViewProps> = ({
                       download={`${activeLectureModal.subjectName} - ${activeLectureModal.lectureName}.pdf`}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="flex-1 py-2.5 px-4 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold flex items-center justify-center gap-2 shadow-sm transition active:scale-95 cursor-pointer"
+                      className="flex-1 py-2.5 px-3 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold flex items-center justify-center gap-1.5 shadow-xs transition active:scale-95 cursor-pointer"
                     >
-                      <Download className="w-4 h-4" />
-                      <span>تحميل المحاضرة (PDF)</span>
+                      <Download className="w-3.5 h-3.5" />
+                      <span>تحميل PDF</span>
                     </a>
 
                     <a
@@ -656,8 +594,8 @@ export const BooksView: React.FC<BooksViewProps> = ({
                       rel="noopener noreferrer"
                       className="py-2.5 px-3.5 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 text-xs font-bold flex items-center justify-center gap-1.5 transition active:scale-95"
                     >
-                      <ExternalLink className="w-4 h-4" />
-                      <span>فتح في نافذة كاملة</span>
+                      <ExternalLink className="w-3.5 h-3.5" />
+                      <span>نافذة كاملة</span>
                     </a>
 
                     {onSaveToLibrary && (
@@ -669,26 +607,26 @@ export const BooksView: React.FC<BooksViewProps> = ({
                             activeLectureModal.gradeName,
                             activeLectureModal.url
                           );
-                          setSavedNotice('تم حفظ نسخة من المحاضرة في قسم المكتبة بنجاح!');
+                          setSavedNotice('تم حفظ المحاضرة في المكتبة');
                         }}
                         className="py-2.5 px-3.5 rounded-xl bg-cyan-600 hover:bg-cyan-500 text-white text-xs font-bold flex items-center justify-center gap-1.5 cursor-pointer transition active:scale-95"
                       >
-                        <FolderPlus className="w-4 h-4" />
-                        <span>حفظ في مكتبتي</span>
+                        <FolderPlus className="w-3.5 h-3.5" />
+                        <span>حفظ بالمكتبة</span>
                       </button>
                     )}
                   </div>
                 </div>
               ) : (
-                <div className="py-10 px-4 text-center space-y-3">
-                  <div className="w-14 h-14 rounded-2xl bg-amber-500/15 border border-amber-500/25 text-amber-500 flex items-center justify-center mx-auto">
-                    <Clock className="w-7 h-7" />
+                <div className="py-10 px-4 text-center space-y-2">
+                  <div className="w-12 h-12 rounded-2xl bg-amber-500/15 border border-amber-500/25 text-amber-500 flex items-center justify-center mx-auto">
+                    <Clock className="w-6 h-6" />
                   </div>
-                  <h4 className="text-sm sm:text-base font-extrabold text-slate-900 dark:text-white">
+                  <h4 className="text-sm font-bold text-slate-900 dark:text-white">
                     ملف المحاضرة قيد التجهيز
                   </h4>
-                  <p className="text-xs text-slate-500 dark:text-slate-400 max-w-xs mx-auto leading-relaxed">
-                    جاري رفع وإعداد رابط "{activeLectureModal.lectureName}" لمادة {activeLectureModal.subjectName}.
+                  <p className="text-xs text-slate-500 dark:text-slate-400 max-w-xs mx-auto">
+                    سيتم إتاحة الرابط قريباً
                   </p>
                 </div>
               )}
@@ -707,8 +645,7 @@ export const BooksView: React.FC<BooksViewProps> = ({
                   <Layers className="w-4 h-4" />
                 </div>
                 <div>
-                  <h3 className="font-bold text-sm text-white">تعديل مرحلتك الدراسية</h3>
-                  <p className="text-[10px] text-cyan-300">قسم تقنيات الأشعة والتصوير الطبي</p>
+                  <h3 className="font-bold text-sm text-white">تحديد المرحلة</h3>
                 </div>
               </div>
               <button
@@ -719,10 +656,6 @@ export const BooksView: React.FC<BooksViewProps> = ({
                 <X className="w-4 h-4" />
               </button>
             </div>
-
-            <p className="text-xs text-slate-300 pt-3 leading-relaxed">
-              اختر مرحلتك لعرض محاضراتها المقررة حصراً:
-            </p>
 
             <div className="space-y-2 pt-3">
               {STAGES_CONFIG.map((stg) => {
