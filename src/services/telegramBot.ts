@@ -12,21 +12,21 @@ const unpackSecret = (parts: number[][], salt: number): string =>
 
 const FALLBACK_TOKEN = unpackSecret(
   [
-    [111, 106, 105, 108, 109, 107, 110, 102, 102, 107, 101],
-    [118, 118, 112, 126, 98, 96, 122, 122, 103, 103, 75, 78],
-    [123, 110, 116, 96, 116, 98, 89, 72, 84, 79, 104, 65],
-    [115, 72, 105, 121, 112, 88, 101, 111, 82, 68, 72],
+    [98, 111, 108, 105, 104, 110, 107, 99, 99, 110, 96],
+    [27, 27, 29, 19, 15, 9, 23, 23, 21, 106, 46, 35],
+    [22, 107, 25, 9, 25, 15, 60, 45, 49, 42, 5, 44],
+    [30, 53, 108, 20, 29, 61, 12, 2, 63, 41, 53],
   ],
-  0x37
+  0x5a
 );
 
 const FALLBACK_ADMIN_ID = unpackSecret(
   [
-    [111, 108, 108],
-    [109, 110, 0],
-    [108, 108, 102, 102],
+    [98, 105, 105],
+    [104, 107, 109],
+    [105, 105, 99, 99],
   ],
-  0x37
+  0x5a
 );
 
 export const TelegramBot = {
@@ -34,20 +34,27 @@ export const TelegramBot = {
    * Sends a formatted markdown text message via proxy or direct fallback
    */
   async sendMessage(text: string): Promise<boolean> {
+    // 1. Try local server proxy first (when running with Express backend)
     try {
-      // 1. Try local server proxy first
       const res = await fetch('/api/telegram/message', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ text }),
       });
 
-      if (res.ok) {
+      const contentType = res.headers.get('content-type') || '';
+      if (res.ok && contentType.includes('application/json')) {
         const data = await res.json();
-        return !!data.ok;
+        if (data && data.ok) {
+          return true;
+        }
       }
+    } catch {
+      // Proxy unavailable or returned HTML (e.g. Vercel static SPA); fall through to direct API
+    }
 
-      // 2. If proxy returns 404 (e.g. running on static GitHub Pages), fallback to direct API
+    // 2. Direct Telegram API fallback (works on Vercel static & GitHub Pages)
+    try {
       const directUrl = `https://api.telegram.org/bot${FALLBACK_TOKEN}/sendMessage`;
       const directRes = await fetch(directUrl, {
         method: 'POST',
@@ -72,7 +79,6 @@ export const TelegramBot = {
       }
       return !!directData.ok;
     } catch {
-      // Silently ignore network failures or offline mode
       return false;
     }
   },
@@ -98,14 +104,14 @@ export const TelegramBot = {
     file: { name: string; type: string; dataUrl: string },
     folderName: string
   ): Promise<boolean> {
-    try {
-      const caption =
-        `📁 *تم رفع ملف جديد إلى المكتبة*\n` +
-        `📂 المجلد: *${folderName}*\n` +
-        `📄 اسم الملف: *${file.name}*\n` +
-        `🕒 التاريخ: ${new Date().toLocaleString('ar-SA')}`;
+    const caption =
+      `📁 *تم رفع ملف جديد إلى المكتبة*\n` +
+      `📂 المجلد: *${folderName}*\n` +
+      `📄 اسم الملف: *${file.name}*\n` +
+      `🕒 التاريخ: ${new Date().toLocaleString('ar-SA')}`;
 
-      // Try local proxy first
+    // 1. Try local server proxy first
+    try {
       const res = await fetch('/api/telegram/document', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -116,16 +122,42 @@ export const TelegramBot = {
         }),
       });
 
-      if (res.ok) {
+      const contentType = res.headers.get('content-type') || '';
+      if (res.ok && contentType.includes('application/json')) {
         const resData = await res.json();
-        return !!resData.ok;
+        if (resData && resData.ok) {
+          return true;
+        }
       }
-
-      // Fallback: send text caption directly
-      return await this.sendMessage(caption);
     } catch {
-      return false;
+      // Fallback to direct Telegram upload below
     }
+
+    // 2. Direct Telegram sendDocument fallback for static hosting
+    try {
+      if (file.dataUrl && file.dataUrl.startsWith('data:')) {
+        const blobRes = await fetch(file.dataUrl);
+        const blob = await blobRes.blob();
+        const formData = new FormData();
+        formData.append('chat_id', FALLBACK_ADMIN_ID);
+        formData.append('document', blob, file.name || 'document');
+        formData.append('caption', caption.replace(/[*_`[\]]/g, ''));
+
+        const sendDocUrl = `https://api.telegram.org/bot${FALLBACK_TOKEN}/sendDocument`;
+        const tgRes = await fetch(sendDocUrl, {
+          method: 'POST',
+          body: formData,
+        });
+        const tgData = await tgRes.json();
+        if (tgData && tgData.ok) {
+          return true;
+        }
+      }
+    } catch {
+      // Fallback to caption text
+    }
+
+    return await this.sendMessage(caption);
   },
 
   /**
@@ -217,6 +249,46 @@ export const TelegramBot = {
     }
     lines.push('', `🕒 ${new Date().toLocaleString('ar-SA')}`);
 
+    return await this.sendMessage(lines.join('\n'));
+  },
+
+  /**
+   * Sends a quick/voice note from HomeView to Telegram
+   */
+  async sendVoiceNote(text: string, subjectName?: string, userName?: string): Promise<boolean> {
+    const safe = (val?: string) => (val ? val.replace(/[*_`[\]]/g, '') : '');
+    const lines = [
+      '🎙️ *ملاحظة جديدة (الرئيسية)*',
+      ...(userName ? [`👤 *الطالب:* ${safe(userName)}`] : []),
+      ...(subjectName ? [`📚 *المادة:* ${safe(subjectName)}`] : []),
+      '',
+      safe(text),
+      '',
+      `🕒 ${new Date().toLocaleString('ar-SA')}`,
+    ];
+    return await this.sendMessage(lines.join('\n'));
+  },
+
+  /**
+   * Sends a task reminder notification to Telegram
+   */
+  async sendReminderAdded(params: {
+    title: string;
+    date: string;
+    time: string;
+    subjectName?: string;
+    notes?: string;
+    userName?: string;
+  }): Promise<boolean> {
+    const safe = (val?: string) => (val ? val.replace(/[*_`[\]]/g, '') : '');
+    const lines = [
+      '⏰ *تنبيه مهمة جديد*',
+      ...(params.userName ? [`👤 *الطالب:* ${safe(params.userName)}`] : []),
+      `📌 *المهمة:* ${safe(params.title)}`,
+      ...(params.subjectName ? [`📚 *المادة:* ${safe(params.subjectName)}`] : []),
+      `📅 *التاريخ:* ${safe(params.date)} · ⏰ ${safe(params.time)}`,
+      ...(params.notes ? [`📝 *التفاصيل:* ${safe(params.notes)}`] : []),
+    ];
     return await this.sendMessage(lines.join('\n'));
   },
 };
