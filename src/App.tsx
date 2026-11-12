@@ -528,6 +528,15 @@ export default function App() {
       reminders: [newReminder, ...(prev.reminders || [])],
     }));
 
+    TelegramBot.sendReminderAdded({
+      title: newReminder.title,
+      date: newReminder.date,
+      time: newReminder.time,
+      subjectName: newReminder.subjectName,
+      notes: newReminder.notes,
+      userName: state.userName,
+    });
+
     triggerTelegramToast('تم ضبط تنبيه الواجب بنجاح ⏰');
   };
 
@@ -629,6 +638,8 @@ export default function App() {
       ...prev,
       voiceNotes: [newVoiceNote, ...(prev.voiceNotes || [])],
     }));
+
+    TelegramBot.sendVoiceNote(text, subjectName, state.userName);
 
     triggerTelegramToast('تم حفظ الملاحظة الصوتية');
   };
